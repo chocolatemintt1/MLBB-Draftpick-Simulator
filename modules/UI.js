@@ -27,6 +27,7 @@ export class UI {
             <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                         background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; 
                         border-radius: 10px; text-align: center; z-index: 1000;">
+                        <p>Coding still in progress, you might experience some buttons are not functioning</p>
                 <p>For the best viewing experience, please switch to desktop view.</p>
                 <button onclick="this.parentElement.style.display='none';" 
                         style="background-color: #ffd700; color: black; border: none; 
