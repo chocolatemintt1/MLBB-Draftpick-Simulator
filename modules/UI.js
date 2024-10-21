@@ -224,12 +224,31 @@ export class UI {
         
         const formatStat = (stat) => (stat * 10).toFixed(1);
         
+        // Get hero names for both teams
+        const playerHeroes = this.gameState.playerPicks.map(heroId => this.getHeroById(heroId).name);
+        const enemyHeroes = this.gameState.enemyPicks.map(heroId => this.getHeroById(heroId).name);
+        
         resultsDiv.innerHTML = `
             <div class="results-header">
                 <h2>Draft Analysis</h2>
                 <p>${evaluation.winner === 'player' ? 
                     `Your team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%` : 
                     `Enemy team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%`}</p>
+            </div>
+            
+            <div class="team-compositions">
+                <div class="team-comp">
+                    <h3>Your Team</h3>
+                    <ul>
+                        ${playerHeroes.map(hero => `<li>${hero}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="team-comp">
+                    <h3>Enemy Team</h3>
+                    <ul>
+                        ${enemyHeroes.map(hero => `<li>${hero}</li>`).join('')}
+                    </ul>
+                </div>
             </div>
             
             <div class="team-stats-comparison">
@@ -267,13 +286,13 @@ export class UI {
                 </ul>
             </div>
         `;
-
+    
         // Show the results in a modal or dedicated section
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.appendChild(resultsDiv);
         document.body.appendChild(modal);
-
+    
         // Add close button
         const closeButton = document.createElement('button');
         closeButton.textContent = 'Close';
