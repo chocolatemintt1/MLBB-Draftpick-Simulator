@@ -355,18 +355,18 @@ export class UI {
             <div class="stats-column">
                 <h3>Your Team</h3>
                 <ul>
-                    <li>Damage: ${formatStat(analysisResult.playerStats.damage)}/10</li>
-                    <li>Durability: ${formatStat(analysisResult.playerStats.durability)}/10</li>
-                    <li>Crowd Control: ${formatStat(analysisResult.playerStats.cc)}/10</li>
+                    <li>Damage: ${formatStat(analysisResult.playerStats.damage)}/100</li>
+                    <li>Durability: ${formatStat(analysisResult.playerStats.durability)}/100</li>
+                    <li>Crowd Control: ${formatStat(analysisResult.playerStats.cc)}/100</li>
                 </ul>
             </div>
             
             <div class="stats-column">
                 <h3>Enemy Team</h3>
                 <ul>
-                    <li>Damage: ${formatStat(analysisResult.enemyStats.damage)}/10</li>
-                    <li>Durability: ${formatStat(analysisResult.enemyStats.durability)}/10</li>
-                    <li>Crowd Control: ${formatStat(analysisResult.enemyStats.cc)}/10</li>
+                    <li>Damage: ${formatStat(analysisResult.enemyStats.damage)}/100</li>
+                    <li>Durability: ${formatStat(analysisResult.enemyStats.durability)}/100</li>
+                    <li>Crowd Control: ${formatStat(analysisResult.enemyStats.cc)}/100</li>
                 </ul>
             </div>
         </div>
