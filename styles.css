@@ -5,16 +5,26 @@
     padding: 0;
 }
 
+:root {
+    --primary-color: #ffd700;
+    --secondary-color: #2a2a2a;
+    --background-color: #1a1a1a;
+    --text-color: #fff;
+}
+
+
 body {
     font-family: Arial, sans-serif;
-    background: #1a1a1a;
-    color: #fff;
-    padding: 20px;
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 10px;
+    min-height: 100vh;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 10px;
 }
 
 .draft-board {
@@ -56,9 +66,10 @@ body {
 }
 
 .hero-pool {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
 }
 
 .hero {
@@ -114,6 +125,13 @@ button:hover {
     gap: 15px;
     margin-top: 20px;
     padding: 15px;
+}
+
+@media (min-width: 768px) {
+    .hero-pool {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
 }
 
 .hero {
@@ -383,18 +401,20 @@ button:hover {
 
 .role-filters {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin: 15px 0;
 }
 
 .role-filters button {
-    margin: 0 5px;
-    padding: 10px 15px;
-    background-color: #f0f0f0;
+    padding: 8px 12px;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    border-radius: 4px;
+    background: #333;
     border: none;
-    border-radius: 5px;
+    color: var(--text-color);
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .role-filters button:hover {
@@ -404,6 +424,15 @@ button:hover {
 .role-filters button.active {
     background-color: #007bff;
     color: white;
+}
+
+#teamSelect, #startGame {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 5px auto;
+    display: block;
+    border-radius: 8px;
 }
 
 .team-header {
@@ -438,6 +467,19 @@ button:hover {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+.draft-board {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+@media (min-width: 768px) {
+    .draft-board {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .draft-results {
