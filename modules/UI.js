@@ -8,6 +8,7 @@ export class UI {
         this.initializeElements();
         this.setupEventListeners();
         this.showDesktopViewNotice();
+        this.hideHeroPool();
 
         this.teamLogos = {
             blacklist: 'assets/teams/blacklist.png',
@@ -19,6 +20,16 @@ export class UI {
             rsg: 'assets/teams/rsg.png',
             omg: 'assets/teams/omg.png',
         };
+    }
+
+    hideHeroPool() {
+        this.heroPool.style.display = 'none';
+        this.roleFilters.style.display = 'none';
+    }
+
+    showHeroPool() {
+        this.heroPool.style.display = 'grid';
+        this.roleFilters.style.display = 'flex';
     }
 
     initializeElements() {
@@ -99,6 +110,7 @@ export class UI {
 
         this.startButton.style.display = 'none';
         this.teamSelect.style.display = 'none';
+        this.showHeroPool();
         this.updateDisplay();
     }
 
