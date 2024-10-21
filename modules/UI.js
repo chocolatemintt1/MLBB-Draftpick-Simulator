@@ -9,6 +9,10 @@ export class UI {
         this.setupEventListeners();
         this.showDesktopViewNotice();
         this.hideHeroPool();
+        this.addFloatingRefreshButton();
+        this.countdownTimer = null;
+        this.timeLeft = 40;
+        this.aiThinkingTime = { min: 3000, max: 8000 };
 
         this.teamLogos = {
             blacklist: 'assets/teams/blacklist.png',
@@ -20,6 +24,50 @@ export class UI {
             rsg: 'assets/teams/rsg.png',
             omg: 'assets/teams/omg.png',
         };
+    }
+
+    async processAITurn() {
+        if (this.gameState.currentTurn === 'enemy') {
+            this.showAIThinking();
+            await this.simulateAIThinking();
+            this.hideAIThinking();
+            
+            const selectedId = this.draftLogic.processAITurn();
+            this.updateDisplay();
+            this.checkGameEnd();
+            
+            if (!this.checkGameEnd()) {
+                this.startCountdown();
+            }
+        }
+    }
+
+    showAIThinking() {
+        const thinkingElement = document.createElement('div');
+        thinkingElement.id = 'ai-thinking';
+        thinkingElement.innerHTML = `
+            <div class="thinking-indicator">
+                <span>Opponent is thinking</span>
+                <div class="dot-animation">
+                    <span>.</span><span>.</span><span>.</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(thinkingElement);
+    }
+
+    hideAIThinking() {
+        const thinkingElement = document.getElementById('ai-thinking');
+        if (thinkingElement) {
+            thinkingElement.remove();
+        }
+    }
+
+    simulateAIThinking() {
+        const thinkingTime = Math.floor(
+            Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + this.aiThinkingTime.min
+        );
+        return new Promise(resolve => setTimeout(resolve, thinkingTime));
     }
 
     hideHeroPool() {
@@ -46,6 +94,19 @@ export class UI {
         this.startButton.addEventListener('click', () => this.startDraft());
         this.heroPool.addEventListener('click', (e) => this.handleHeroClick(e));
         this.roleFilters.addEventListener('click', (e) => this.handleRoleFilter(e));
+    }
+
+    addFloatingRefreshButton() {
+        const refreshButton = document.createElement('button');
+        refreshButton.id = 'floatingRefreshButton';
+        refreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>';
+        refreshButton.title = "Refresh Game";
+        refreshButton.addEventListener('click', () => this.refreshGame());
+        document.body.appendChild(refreshButton);
+    }
+
+    refreshGame() {
+        location.reload();
     }
 
     handleRoleFilter(event) {
@@ -95,7 +156,7 @@ export class UI {
         document.body.appendChild(notice);
     }
 
-    startDraft() {
+    async startDraft() {
         this.gameState.selectedEnemy = this.teamSelect.value;
         if (this.gameState.selectedEnemy === 'player') {
             alert('Please select an enemy team!');
@@ -112,6 +173,52 @@ export class UI {
         this.teamSelect.style.display = 'none';
         this.showHeroPool();
         this.updateDisplay();
+        this.startCountdown();
+
+        this.updateDisplay();
+        if (this.gameState.currentTurn === 'enemy') {
+            await this.processAITurn();
+        } else {
+            this.startCountdown();
+        }
+    }
+
+    startCountdown() {
+        this.timeLeft = 40;
+        this.updateCountdownDisplay();
+        this.countdownTimer = setInterval(() => {
+            this.timeLeft--;
+            this.updateCountdownDisplay();
+            if (this.timeLeft <= 0) {
+                this.handleTimeout();
+            }
+        }, 1000);
+    }
+
+    handleTimeout() {
+        clearInterval(this.countdownTimer);
+        if (this.gameState.currentTurn === 'player') {
+            // Auto-select a hero for the player
+            const availableHeroes = this.draftLogic.heroes.filter(hero =>
+                this.gameState.isHeroAvailable(hero.id)
+            );
+            if (availableHeroes.length > 0) {
+                const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
+                this.draftLogic.processPlayerSelection(randomHero.id);
+            }
+        }
+        this.processAITurn();
+        //this.draftLogic.processAITurn();
+        this.updateDisplay();
+        this.checkGameEnd();
+        if (!this.checkGameEnd()) {
+            this.startCountdown();
+        }
+    }
+
+    updateCountdownDisplay() {
+        const countdownElement = document.getElementById('countdown');
+        countdownElement.textContent = `Time left: ${this.timeLeft}s`;
     }
 
     handleHeroClick(event) {
@@ -120,9 +227,8 @@ export class UI {
 
         const heroId = heroElement.dataset.heroId;
         if (this.draftLogic.processPlayerSelection(heroId)) {
-            this.draftLogic.processAITurn();
-            this.updateDisplay();
-            this.checkGameEnd();
+            clearInterval(this.countdownTimer);
+            this.processAITurn(); // Use the new async method
         }
     }
 
@@ -206,6 +312,7 @@ export class UI {
         this.renderHeroPool();
         this.updatePhaseIndicator();
         this.updateTeamDisplays();
+        this.updateCountdownDisplay();
     }
 
     updatePhaseIndicator() {
@@ -221,19 +328,19 @@ export class UI {
     displayDraftResults(evaluation) {
         const resultsDiv = document.createElement('div');
         resultsDiv.className = 'draft-results';
-        
+
         const formatStat = (stat) => (stat * 10).toFixed(1);
-        
+
         // Get hero names for both teams
         const playerHeroes = this.gameState.playerPicks.map(heroId => this.getHeroById(heroId).name);
         const enemyHeroes = this.gameState.enemyPicks.map(heroId => this.getHeroById(heroId).name);
-        
+
         resultsDiv.innerHTML = `
             <div class="results-header">
                 <h2>Draft Analysis</h2>
-                <p>${evaluation.winner === 'player' ? 
-                    `Your team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%` : 
-                    `Enemy team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%`}</p>
+                <p>${evaluation.winner === 'player' ?
+                `Your team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%` :
+                `Enemy team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%`}</p>
             </div>
             
             <div class="team-compositions">
@@ -286,13 +393,13 @@ export class UI {
                 </ul>
             </div>
         `;
-    
+
         // Show the results in a modal or dedicated section
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.appendChild(resultsDiv);
         document.body.appendChild(modal);
-    
+
         // Add close button
         const closeButton = document.createElement('button');
         closeButton.textContent = 'Close';
@@ -302,9 +409,10 @@ export class UI {
 
     checkGameEnd() {
         if (this.gameState.playerPicks.length === 5 && this.gameState.enemyPicks.length === 5) {
+            clearInterval(this.countdownTimer);
             const evaluation = this.draftLogic.evaluateDraft();
             this.displayDraftResults(evaluation);
-            
+
             // Reset game state after showing results
             setTimeout(() => {
                 this.gameState.reset();
@@ -312,6 +420,8 @@ export class UI {
                 this.startButton.style.display = 'block';
                 this.teamSelect.style.display = 'block';
             }, 1000);
+            return true;
         }
+        return false;
     }
 }
