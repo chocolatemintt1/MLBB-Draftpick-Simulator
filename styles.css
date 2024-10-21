@@ -32,8 +32,8 @@ body {
 
 .team-name {
     font-size: 24px;
-    margin-bottom: 15px;
     color: #ffd700;
+    margin: 0;
 }
 
 .picks-bans {
@@ -56,10 +56,9 @@ body {
 }
 
 .hero-pool {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .hero {
@@ -369,4 +368,140 @@ button:hover {
     .footer-section {
         margin: 0 0 30px;
     }
+}
+
+.role-section {
+    margin-bottom: 20px;
+}
+
+.role-section h3 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+
+.role-filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.role-filters button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.role-filters button:hover {
+    background-color: #e0e0e0;
+}
+
+.role-filters button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.team-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.team-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+#playerTeam .team-logo {
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+}
+
+#enemyTeam .team-logo {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.draft-results {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.results-header h2 {
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.team-stats-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.stats-column h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.stats-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.stats-column li {
+    margin-bottom: 10px;
+    padding: 8px;
+    background: #333;
+    border-radius: 4px;
+}
+
+.analysis-tips {
+    border-top: 1px solid #444;
+    padding-top: 20px;
+}
+
+.analysis-tips h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.analysis-tips ul {
+    list-style: none;
+    padding: 0;
+}
+
+.analysis-tips li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #333;
+    border-radius: 4px;
 }
