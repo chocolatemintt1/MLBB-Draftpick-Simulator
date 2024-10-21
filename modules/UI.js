@@ -1,9 +1,10 @@
 export class UI {
-    constructor(gameState, draftLogic, teamStrategies, roleOrder) {
+    constructor(gameState, draftLogic, teamStrategies, roleOrder, teamAnalysis) {
         this.gameState = gameState;
         this.draftLogic = draftLogic;
         this.teamStrategies = teamStrategies;
         this.roleOrder = roleOrder;
+        this.teamAnalysis = teamAnalysis;
         this.currentFilter = null;
         this.initializeElements();
         this.setupEventListeners();
@@ -31,11 +32,10 @@ export class UI {
             this.showAIThinking();
             await this.simulateAIThinking();
             this.hideAIThinking();
-            
+
             const selectedId = this.draftLogic.processAITurn();
             this.updateDisplay();
-            this.checkGameEnd();
-            
+
             if (!this.checkGameEnd()) {
                 this.startCountdown();
             }
@@ -326,84 +326,112 @@ export class UI {
     }
 
     displayDraftResults(evaluation) {
+        const existingResults = document.querySelector('.modal');
+        if (existingResults) {
+            existingResults.remove();
+        }
+
+        const analysisResult = this.teamAnalysis.analyzeDraft(
+            this.gameState.playerPicks,
+            this.gameState.enemyPicks
+        );
+
         const resultsDiv = document.createElement('div');
         resultsDiv.className = 'draft-results';
 
         const formatStat = (stat) => (stat * 10).toFixed(1);
 
-        // Get hero names for both teams
-        const playerHeroes = this.gameState.playerPicks.map(heroId => this.getHeroById(heroId).name);
-        const enemyHeroes = this.gameState.enemyPicks.map(heroId => this.getHeroById(heroId).name);
-
         resultsDiv.innerHTML = `
-            <div class="results-header">
-                <h2>Draft Analysis</h2>
-                <p>${evaluation.winner === 'player' ?
-                `Your team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%` :
-                `Enemy team has an advantage of ${(evaluation.advantage * 10).toFixed(1)}%`}</p>
-            </div>
-            
-            <div class="team-compositions">
-                <div class="team-comp">
-                    <h3>Your Team</h3>
-                    <ul>
-                        ${playerHeroes.map(hero => `<li>${hero}</li>`).join('')}
-                    </ul>
-                </div>
-                <div class="team-comp">
-                    <h3>Enemy Team</h3>
-                    <ul>
-                        ${enemyHeroes.map(hero => `<li>${hero}</li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="team-stats-comparison">
-                <div class="stats-column">
-                    <h3>Your Team</h3>
-                    <ul>
-                        <li>Early-Mid Game: ${formatStat(evaluation.playerStats.earlyMidGame)}/10</li>
-                        <li>Late Game: ${formatStat(evaluation.playerStats.lateGame)}/10</li>
-                        <li>Damage Potential: ${formatStat(evaluation.playerStats.damage)}/10</li>
-                        <li>Survival Potential: ${formatStat(evaluation.playerStats.survival)}/10</li>
-                        <li>Crowd Control: ${formatStat(evaluation.playerStats.crowdControl)}/10</li>
-                        <li>Push Potential: ${formatStat(evaluation.playerStats.push)}/10</li>
-                        <li>Team Coordination: ${formatStat(evaluation.playerStats.coordination)}/10</li>
-                    </ul>
-                </div>
-                
-                <div class="stats-column">
-                    <h3>Enemy Team</h3>
-                    <ul>
-                        <li>Early-Mid Game: ${formatStat(evaluation.enemyStats.earlyMidGame)}/10</li>
-                        <li>Late Game: ${formatStat(evaluation.enemyStats.lateGame)}/10</li>
-                        <li>Damage Potential: ${formatStat(evaluation.enemyStats.damage)}/10</li>
-                        <li>Survival Potential: ${formatStat(evaluation.enemyStats.survival)}/10</li>
-                        <li>Crowd Control: ${formatStat(evaluation.enemyStats.crowdControl)}/10</li>
-                        <li>Push Potential: ${formatStat(evaluation.enemyStats.push)}/10</li>
-                        <li>Team Coordination: ${formatStat(evaluation.enemyStats.coordination)}/10</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="analysis-tips">
-                <h3>Strategic Analysis</h3>
+        <div class="results-header">
+            <h2>Draft Analysis</h2>
+            <p class="advantage-text ${analysisResult.advantage.winner === 'player' ? 'advantage-player' : 'advantage-enemy'}">
+                ${analysisResult.advantage.winner === 'player' ?
+                `Your team has an advantage of ${(analysisResult.advantage.advantage * 100).toFixed(1)}%` :
+                `Enemy team has an advantage of ${(analysisResult.advantage.advantage * 100).toFixed(1)}%`}
+            </p>
+        </div>
+        
+        <div class="team-stats-comparison">
+            <div class="stats-column">
+                <h3>Your Team</h3>
                 <ul>
-                    ${evaluation.analysis.map(tip => `<li>${tip}</li>`).join('')}
+                    <li>Damage: ${formatStat(analysisResult.playerStats.damage)}/10</li>
+                    <li>Durability: ${formatStat(analysisResult.playerStats.durability)}/10</li>
+                    <li>Crowd Control: ${formatStat(analysisResult.playerStats.cc)}/10</li>
                 </ul>
             </div>
-        `;
+            
+            <div class="stats-column">
+                <h3>Enemy Team</h3>
+                <ul>
+                    <li>Damage: ${formatStat(analysisResult.enemyStats.damage)}/10</li>
+                    <li>Durability: ${formatStat(analysisResult.enemyStats.durability)}/10</li>
+                    <li>Crowd Control: ${formatStat(analysisResult.enemyStats.cc)}/10</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="team-compositions">
+            <div class="team-comp">
+                <h3>Your Team Composition</h3>
+                <div class="hero-images">
+                    ${this.gameState.playerPicks.map(heroId => {
+                    const hero = this.getHeroById(heroId);
+                    return `<img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">`;
+                }).join('')}
+                </div>
+            </div>
+            <div class="team-comp">
+                <h3>Enemy Team Composition</h3>
+                <div class="hero-images">
+                    ${this.gameState.enemyPicks.map(heroId => {
+                    const hero = this.getHeroById(heroId);
+                    return `<img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">`;
+                }).join('')}
+                </div>
+            </div>
+        </div>
+        
+        <div class="strategic-advice">
+            <h3>Strategic Analysis</h3>
+            <ul>
+                ${analysisResult.advice.map(tip => `
+                    <li class="advice-${tip.type}">${tip.text}</li>
+                `).join('')}
+            </ul>
+        </div>
 
-        // Show the results in a modal or dedicated section
+        <div class="victory-conditions">
+            <div class="your-conditions">
+                <h3>Your Victory Conditions</h3>
+                <ul>
+                    ${analysisResult.keyVictoryConditions.player.map(condition =>
+                    `<li>${condition}</li>`
+                ).join('')}
+                </ul>
+            </div>
+            <div class="enemy-conditions">
+                <h3>Enemy Victory Conditions</h3>
+                <ul>
+                    ${analysisResult.keyVictoryConditions.enemy.map(condition =>
+                    `<li>${condition}</li>`
+                ).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.appendChild(resultsDiv);
         document.body.appendChild(modal);
 
-        // Add close button
         const closeButton = document.createElement('button');
         closeButton.textContent = 'Close';
-        closeButton.onclick = () => modal.remove();
+        closeButton.onclick = () => {
+            modal.remove();
+            this.hideHeroPool();
+        };
         resultsDiv.appendChild(closeButton);
     }
 
@@ -419,6 +447,7 @@ export class UI {
                 this.updateDisplay();
                 this.startButton.style.display = 'block';
                 this.teamSelect.style.display = 'block';
+                this.hideHeroPool();
             }, 1000);
             return true;
         }
