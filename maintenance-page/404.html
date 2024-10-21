@@ -5,54 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 - Page Not Found</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
       font-family: Arial, sans-serif;
       background-color: #f8f9fa;
       color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .container {
       text-align: center;
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
     }
 
-    .svg-icon {
-      width: 150px;
-      height: 150px;
+    img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
       margin-bottom: 20px;
     }
 
     h1 {
-      font-size: 48px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 18px;
-      color: #777;
+      font-size: clamp(36px, 8vw, 48px);
       margin-bottom: 20px;
     }
 
+    p {
+      font-size: clamp(16px, 4vw, 18px);
+      color: #777;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
     a {
+      display: inline-block;
       text-decoration: none;
       color: #007bff;
-      font-size: 18px;
+      font-size: clamp(16px, 4vw, 18px);
+      padding: 10px 20px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      margin-top: 20px;
+      transition: all 0.3s ease;
     }
 
     a:hover {
-      text-decoration: underline;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+
+      img {
+        max-width: 180px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 800px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="layla-cry.png" alt="layla-404">
-
+    <img src="layla-cry.png" alt="404 illustration">
     <h1>404</h1>
     <p>Oops! The page you're looking for doesn't exist.</p>
     <p>I'm not done yet with the coding so kindly wait okay..</p>
