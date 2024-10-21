@@ -2,58 +2,58 @@
 export const teamStrategies = {
     blacklist: {
         name: 'Blacklist International',
-        preferredPicks: ['estes', 'mathilda', 'beatrix', 'yu-zhong', 'uranus'],
-        commonBans: ['lancelot', 'hayabusa', 'paquito', 'selena', 'chou'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'defensive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     echo: {
         name: 'Team Liquid Echo Philippines',
-        preferredPicks: ['beatrix', 'chou', 'esmeralda', 'paquito', 'mathilda'],
-        commonBans: ['estes', 'lylia', 'yve', 'pharsa', 'lunox'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     onic: {
         name: 'Fanatic ONIC Philippines',
-        preferredPicks: ['barats', 'lolita', 'lunox', 'kagura', 'phoveus'],
-        commonBans: ['aldous', 'ling', 'natalia', 'hayabusa', 'gusion'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     ap: {
         name: 'Falcons AP Bren',
-        preferredPicks: ['claude', 'khufra', 'selena', 'chou', 'esmeralda'],
-        commonBans: ['estes', 'mathilda', 'lancelot', 'paquito', 'beatrix'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     tnc: {
         name: 'TNC',
-        preferredPicks: ['claude', 'khufra', 'selena', 'chou', 'esmeralda'],
-        commonBans: ['estes', 'mathilda', 'lancelot', 'paquito', 'beatrix'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     aurora: {
         name: 'Aurora MLBB',
-        preferredPicks: ['claude', 'khufra', 'selena', 'chou', 'esmeralda'],
-        commonBans: ['estes', 'mathilda', 'lancelot', 'paquito', 'beatrix'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     rsg: {
         name: 'RSG Philippines',
-        preferredPicks: ['claude', 'khufra', 'selena', 'chou', 'esmeralda'],
-        commonBans: ['estes', 'mathilda', 'lancelot', 'paquito', 'beatrix'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     },
     omg: {
         name: 'Smart Omega',
-        preferredPicks: ['claude', 'khufra', 'selena', 'chou', 'esmeralda'],
-        commonBans: ['estes', 'mathilda', 'lancelot', 'paquito', 'beatrix'],
+        preferredPicks: [],
+        commonBans: [],
         playstyle: 'aggressive',
-        lateGameFocus: true
+        lateGameFocus: false
     }
 };
