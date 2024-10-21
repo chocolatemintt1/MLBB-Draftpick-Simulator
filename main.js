@@ -8,5 +8,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameState = new GameState();
     const draftLogic = new DraftLogic(gameState, heroes, teamStrategies);
     const ui = new UI(gameState, draftLogic, teamStrategies, roleOrder);
-    ui.renderHeroPool();  // Initial render
 });
