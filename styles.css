@@ -847,3 +847,9 @@ button:hover {
     background-color: rgba(244, 67, 54, 0.1);
     border: 1px solid #f44336;
 }
+
+.draft-message-draw {
+    color: #272323;
+    background-color: rgba(233, 218, 217, 0.1);
+    border: 1px solid #272323;
+}
