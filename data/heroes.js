@@ -35,7 +35,7 @@ const originalHeroes = [
     { id: "zilong", name: "Zilong", role: "Fighter", damage: 8, durability: 5, cc: 4, image: "assets/zilong.webp" },
     { id: "zilong", name: "Zilong", role: "Assassin", damage: 8, durability: 5, cc: 4, image: "assets/zilong.webp" },
     { id: "freya", name: "Freya", role: "Fighter", damage: 7, durability: 6, cc: 5, image: "assets/freya.webp" },
-    { id: "freya", name: "Chou", role: "Fighter", damage: 7, durability: 6, cc: 7, image: "assets/chou.webp" },
+    { id: "chou", name: "Chou", role: "Fighter", damage: 7, durability: 6, cc: 7, image: "assets/chou.webp" },
     { id: "sun", name: "Sun", role: "Fighter", damage: 7, durability: 6, cc: 4, image: "assets/sun.webp" },
     { id: "alpha", name: "Alpha", role: "Fighter", damage: 7, durability: 6, cc: 5, image: "assets/alpha.webp" },
     { id: "ruby", name: "Ruby", role: "Fighter", damage: 6, durability: 7, cc: 8, image: "assets/ruby.webp" },
