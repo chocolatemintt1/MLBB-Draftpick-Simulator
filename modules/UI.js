@@ -374,7 +374,9 @@ export class UI {
         if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 2.5) {
             draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;
         } else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
-            draftMessage = `<p class="draft-message draft-message-good">Congrats! You're a great coach/analyst</p>`;
+            draftMessage = `<p class="draft-message draft-message-good">Wow! You're a great coach/analyst</p>`;
+        } else if (analysisResult.advantage.winner === 'player' && advantagePercentage < 2.5 || analysisResult.advantage.winner === 'enemy' && advantagePercentage <2.5) {
+            draftMessage = `<p class="draft-message draft-message-draw">It's an even draft, it's up to the mechanics of the players now..</p>`;
         }
 
         const playerRoles = this.draftLogic.getMissingRoles(this.gameState.playerPicks);
