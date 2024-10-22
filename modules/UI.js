@@ -11,9 +11,11 @@ export class UI {
         this.showDesktopViewNotice();
         this.hideHeroPool();
         this.addFloatingRefreshButton();
+        this.updateTeamCompositionDisplay(); // New method
         this.countdownTimer = null;
         this.timeLeft = 40;
         this.aiThinkingTime = { min: 3000, max: 8000 };
+
 
         this.teamLogos = {
             blacklist: 'assets/teams/blacklist.png',
@@ -25,6 +27,31 @@ export class UI {
             rsg: 'assets/teams/rsg.png',
             omg: 'assets/teams/omg.png',
         };
+    }
+
+    updateTeamCompositionDisplay() {
+        const playerComp = document.getElementById('playerComposition');
+        const enemyComp = document.getElementById('enemyComposition');
+
+        if (playerComp && enemyComp) {
+            const strategy = this.teamStrategies[this.gameState.selectedEnemy];
+            const playerRoles = this.draftLogic.getMissingRoles(this.gameState.playerPicks);
+            const enemyRoles = this.draftLogic.getMissingRoles(this.gameState.enemyPicks);
+
+            playerComp.innerHTML = `
+                <div class="composition-info">
+                    <h4>Missing Roles:</h4>
+                    <ul>${playerRoles.map(role => `<li>${role}</li>`).join('')}</ul>
+                </div>
+            `;
+
+            enemyComp.innerHTML = `
+                <div class="composition-info">
+                    <h4>Enemy Missing Roles:</h4>
+                    <ul>${enemyRoles.map(role => `<li>${role}</li>`).join('')}</ul>
+                </div>
+            `;
+        }
     }
 
     async processAITurn() {
@@ -340,15 +367,52 @@ export class UI {
         resultsDiv.className = 'draft-results';
 
         const formatStat = (stat) => (stat * 10).toFixed(1);
+        const advantagePercentage = analysisResult.advantage.advantage * 100;
+
+        // Generate the draft message based on advantage percentage
+        let draftMessage = '';
+        if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 2.5) {
+            draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;
+        } else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
+            draftMessage = `<p class="draft-message draft-message-good">Congrats! You're a great coach/analyst</p>`;
+        }
+
+        const playerRoles = this.draftLogic.getMissingRoles(this.gameState.playerPicks);
+        const enemyRoles = this.draftLogic.getMissingRoles(this.gameState.enemyPicks);
+
+        resultsDiv.innerHTML += `
+            <div class="role-analysis">
+                <h3>Role Coverage Analysis</h3>
+                <div class="team-roles">
+                    <div class="player-roles">
+                        <h4>Your Team Roles</h4>
+                        <ul>
+                            ${playerRoles.length === 0 ?
+                '<li>All roles covered!</li>' :
+                playerRoles.map(role => `<li>Missing: ${role}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="enemy-roles">
+                        <h4>Enemy Team Roles</h4>
+                        <ul>
+                            ${enemyRoles.length === 0 ?
+                '<li>All roles covered!</li>' :
+                enemyRoles.map(role => `<li>Missing: ${role}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
 
         resultsDiv.innerHTML = `
         <div class="results-header">
             <h2>Draft Analysis</h2>
             <p class="advantage-text ${analysisResult.advantage.winner === 'player' ? 'advantage-player' : 'advantage-enemy'}">
                 ${analysisResult.advantage.winner === 'player' ?
-                `Your team has an advantage of ${(analysisResult.advantage.advantage * 100).toFixed(1)}%` :
-                `Enemy team has an advantage of ${(analysisResult.advantage.advantage * 100).toFixed(1)}%`}
+                `Your team has an advantage of ${advantagePercentage.toFixed(1)}%` :
+                `Enemy team has an advantage of ${advantagePercentage.toFixed(1)}%`}
             </p>
+            ${draftMessage}
         </div>
         
         <div class="team-stats-comparison">
