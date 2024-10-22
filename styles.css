@@ -172,19 +172,22 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 80px;
 }
 
 .hero-images {
     display: flex;
-    justify-content: space-around;
     flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 .hero-image {
     width: 60px;
     height: 60px;
+    border-radius: 8px;
     object-fit: cover;
-    border-radius: 50%;
     margin: 5px;
     border: 2px solid var(--primary-color);
 }
@@ -396,9 +399,10 @@ button:hover {
 }
 
 .team-logo {
-    width: clamp(40px, 8vw, 60px);
-    height: clamp(40px, 8vw, 60px);
+    width: 80px;
+    height: 80px;
     object-fit: contain;
+    margin-bottom: 10px;
 }
 
 #playerTeam .team-logo {
@@ -413,12 +417,14 @@ button:hover {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 20px;
     z-index: 1000;
 }
 
@@ -443,10 +449,15 @@ button:hover {
 }
 
 .team-stats-comparison {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+}
+
+.stats-column {
+    flex: 1;
+    min-width: 280px;
 }
 
 .stats-column h3 {
@@ -527,12 +538,14 @@ button:hover {
 
 .team-compositions {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 30px 0;
 }
 
 .team-comp {
-    width: 48%;
+    flex: 1;
+    min-width: 280px;
 }
 
 .team-comp h3 {
@@ -852,4 +865,73 @@ button:hover {
     color: #d0c4c4;
     background-color: rgba(233, 218, 217, 0.1);
     border: 1px solid #272323;
+}
+
+.team-logos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.team-logo-section {
+    text-align: center;
+    flex: 0 1 150px;
+}
+
+.draft-title {
+    flex: 1;
+    text-align: center;
+    min-width: 200px;
+}
+
+.team-logos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.team-logo-section {
+    text-align: center;
+    flex: 0 0 150px;
+}
+
+/* Stats Comparison */
+.team-stats-container {
+    margin: 30px 0;
+}
+
+@media (max-width: 480px) {
+    .team-logo-section {
+        flex: 0 1 100px;
+    }
+
+    .team-logo {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .team-logo-section {
+        flex: 0 1 120px;
+    }
+
+    .team-logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .team-logos-container {
+        justify-content: center;
+    }
+
+    .team-logo-section {
+        flex: 0 1 120px;
+    }
 }
