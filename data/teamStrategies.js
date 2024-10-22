@@ -2,57 +2,57 @@ export const teamStrategies = {
     blacklist: {
         name: 'Blacklist International',
         preferredPicks: ['Estes', 'Mathilda', 'Beatrix', 'Valentina', 'Khufra', 'Lancelot', 'Paquito', 'Esmeralda', 'Julian', 'Kagura'],
-        commonBans: ['Fredrinn', 'Joy', 'Arlott', 'Mathilda', 'Valentina'],
+        commonBans: ['Fanny', 'Ling', 'Hayabusa', 'Suyou', 'Alpha'],
         playstyle: 'defensive',
         lateGameFocus: true,
         rolePreference: {
-            jungler: ['Lancelot', 'Aamon', 'Ling'],
-            midlane: ['Valentina', 'Kagura', 'Yve'],
-            exp: ['Esmeralda', 'Paquito', 'Yu Zhong'],
-            roam: ['Mathilda', 'Khufra', 'Atlas'],
-            gold: ['Beatrix', 'Karrie', 'Brody']
+            jungler: ['Alpha', 'Suyou', 'Ling'],
+            midlane: ['Valentina', 'Aurora', 'Yve'],
+            exp: ['Hylos', 'Khaleed', 'Terizla'],
+            roam: ['Mathilda', 'Rafaela', 'Chou'],
+            gold: ['Harith', 'Karrie', 'Moskov']
         }
     },
     echo: {
         name: 'Team Liquid Echo Philippines',
         preferredPicks: ['Fanny', 'Chou', 'Ling', 'Lolita', 'Beatrix', 'Xavier', 'Lylia', 'Khufra', 'Yve', 'Karrie'],
-        commonBans: ['Valentina', 'Julian', 'Fredrinn', 'Mathilda', 'Ling'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
-            jungler: ['Fanny', 'Ling', 'Hayabusa'],
-            midlane: ['Xavier', 'Lylia', 'Yve'],
-            exp: ['Chou', 'Paquito', 'Arlott'],
-            roam: ['Lolita', 'Khufra', 'Franco'],
-            gold: ['Beatrix', 'Melissa', 'Brody']
+            jungler: ['Alpha', 'Ling', 'Suyou'],
+            midlane: ['Valentina', 'Aurora', 'Yve', 'Vexana'],
+            exp: ['Phoveus', 'Hylos', 'Arlott'],
+            roam: ['Chou', 'Khufra', 'Edith'],
+            gold: ['Claude', 'Karrie', 'Harith']
         }
     },
     onic: {
         name: 'Fanatic ONIC Philippines',
         preferredPicks: ['Hayabusa', 'Julian', 'Atlas', 'Yve', 'Melissa', 'Valentina', 'Esmeralda', 'Beatrix', 'Khufra', 'Chou'],
-        commonBans: ['Ling', 'Mathilda', 'Joy', 'Fredrinn', 'Fanny'],
+        commonBans: ['Julian', 'Harith', 'Claude', 'Hylos', 'Phoveus'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
-            jungler: ['Hayabusa', 'Julian', 'Aamon'],
-            midlane: ['Yve', 'Valentina', 'Xavier'],
-            exp: ['Esmeralda', 'Paquito', 'Chou'],
-            roam: ['Atlas', 'Khufra', 'Mathilda'],
-            gold: ['Melissa', 'Beatrix', 'Karrie']
+            jungler: ['Nolan', 'Julian', 'Alpha'],
+            midlane: ['Yve', 'Valentina', 'Lou Yi'],
+            exp: ['Chou', 'Gatot Kaca', 'Hylos'],
+            roam: ['Hylos', 'Chou', 'Mathilda'],
+            gold: ['Harith', 'Beatrix', 'Karrie', 'Claude']
         }
     },
     ap: {
         name: 'Falcons AP Bren',
         preferredPicks: ['Ling', 'Beatrix', 'Mathilda', 'Valentina', 'Esmeralda', 'Lolita', 'Julian', 'Aamon', 'Karrie', 'Atlas'],
-        commonBans: ['Fanny', 'Joy', 'Fredrinn', 'Arlott', 'Mathilda'],
+        commonBans: ['Fanny', 'Ling', 'Gatot Kaca', 'Harith', 'Mathilda'],
         playstyle: 'aggressive',
         lateGameFocus: true,
         rolePreference: {
-            jungler: ['Ling', 'Aamon', 'Julian'],
-            midlane: ['Valentina', 'Xavier', 'Lylia'],
-            exp: ['Esmeralda', 'Yu Zhong', 'Paquito'],
-            roam: ['Mathilda', 'Lolita', 'Atlas'],
-            gold: ['Beatrix', 'Karrie', 'Melissa']
+            jungler: ['Ling', 'Fanny', 'Alpha'],
+            midlane: ['Valentina', 'Julian', 'Lylia', 'Faramis', 'Aurora', 'Vexana'],
+            exp: ['Khaleed', 'Gatot Kaca', 'Phoveus'],
+            roam: ['Mathilda', 'Arlott', 'Minotaur', 'Tigreal'],
+            gold: ['Harith', 'Beatrix', 'Karrie', 'Claude']
         }
     },
     tnc: {
@@ -72,15 +72,15 @@ export const teamStrategies = {
     aurora: {
         name: 'Aurora MLBB',
         preferredPicks: ['Aamon', 'Julian', 'Atlas', 'Xavier', 'Melissa', 'Mathilda', 'Esmeralda', 'Beatrix', 'Khufra', 'Arlott'],
-        commonBans: ['Ling', 'Fanny', 'Joy', 'Fredrinn', 'Valentina'],
+        commonBans: ['Ling', 'Fanny', 'Faramis', 'Suyou', 'Valentina'],
         playstyle: 'aggressive',
         lateGameFocus: true,
         rolePreference: {
-            jungler: ['Aamon', 'Julian', 'Lancelot'],
-            midlane: ['Xavier', 'Yve', 'Lylia'],
-            exp: ['Esmeralda', 'Arlott', 'Paquito'],
-            roam: ['Atlas', 'Mathilda', 'Khufra'],
-            gold: ['Melissa', 'Beatrix', 'Karrie']
+            jungler: ['Ling', 'Fanny', 'Alpha', 'Suyou'],
+            midlane: ['Valentina', 'Julian', 'Lylia', 'Faramis', 'Aurora', 'Vexana'],
+            exp: ['Khaleed', 'Gatot Kaca', 'Phoveus'],
+            roam: ['Mathilda', 'Arlott', 'Minotaur', 'Tigreal'],
+            gold: ['Harith', 'Beatrix', 'Karrie', 'Claude']
         }
     },
     rsg: {
