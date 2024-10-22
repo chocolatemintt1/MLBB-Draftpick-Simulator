@@ -13,7 +13,6 @@ export class UI {
         this.addFloatingRefreshButton();
         this.updateTeamCompositionDisplay(); // New method
         this.countdownTimer = null;
-        this.timeLeft = 40;
         this.aiThinkingTime = { min: 3000, max: 8000 };
 
 
@@ -211,7 +210,7 @@ export class UI {
     }
 
     startCountdown() {
-        this.timeLeft = 40;
+        this.timeLeft = 60;
         this.updateCountdownDisplay();
         this.countdownTimer = setInterval(() => {
             this.timeLeft--;
@@ -219,7 +218,7 @@ export class UI {
             if (this.timeLeft <= 0) {
                 this.handleTimeout();
             }
-        }, 1000);
+        }, 2500);
     }
 
     handleTimeout() {
@@ -375,65 +374,83 @@ export class UI {
             draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;
         } else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
             draftMessage = `<p class="draft-message draft-message-good">Wow! You're a great coach/analyst</p>`;
-        } else if (analysisResult.advantage.winner === 'player' && advantagePercentage < 2.5 || analysisResult.advantage.winner === 'enemy' && advantagePercentage <2.5) {
+        } else if (analysisResult.advantage.winner === 'player' && advantagePercentage < 2.5 || analysisResult.advantage.winner === 'enemy' && advantagePercentage < 2.5) {
             draftMessage = `<p class="draft-message draft-message-draw">It's an even draft, it's up to the mechanics of the players now..</p>`;
         }
 
         const playerRoles = this.draftLogic.getMissingRoles(this.gameState.playerPicks);
         const enemyRoles = this.draftLogic.getMissingRoles(this.gameState.enemyPicks);
 
-        resultsDiv.innerHTML += `
-            <div class="role-analysis">
-                <h3>Role Coverage Analysis</h3>
-                <div class="team-roles">
-                    <div class="player-roles">
-                        <h4>Your Team Roles</h4>
-                        <ul>
-                            ${playerRoles.length === 0 ?
-                '<li>All roles covered!</li>' :
-                playerRoles.map(role => `<li>Missing: ${role}</li>`).join('')}
-                        </ul>
-                    </div>
-                    <div class="enemy-roles">
-                        <h4>Enemy Team Roles</h4>
-                        <ul>
-                            ${enemyRoles.length === 0 ?
-                '<li>All roles covered!</li>' :
-                enemyRoles.map(role => `<li>Missing: ${role}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        `;
-
         resultsDiv.innerHTML = `
         <div class="results-header">
-            <h2>Draft Analysis</h2>
-            <p class="advantage-text ${analysisResult.advantage.winner === 'player' ? 'advantage-player' : 'advantage-enemy'}">
-                ${analysisResult.advantage.winner === 'player' ?
+            <div class="team-logos-container">
+                <div class="draft-title">
+                    <h2>Draft Analysis</h2>
+                    <p class="advantage-text ${analysisResult.advantage.winner === 'player' ? 'advantage-player' : 'advantage-enemy'}">
+                        ${analysisResult.advantage.winner === 'player' ?
                 `Your team has an advantage of ${advantagePercentage.toFixed(1)}%` :
                 `Enemy team has an advantage of ${advantagePercentage.toFixed(1)}%`}
-            </p>
-            ${draftMessage}
+                    </p>
+                    ${draftMessage}
+                </div>
+            </div>
         </div>
         
-        <div class="team-stats-comparison">
-            <div class="stats-column">
-                <h3>Your Team</h3>
-                <ul>
-                    <li>Damage: ${formatStat(analysisResult.playerStats.damage)}/100</li>
-                    <li>Durability: ${formatStat(analysisResult.playerStats.durability)}/100</li>
-                    <li>Crowd Control: ${formatStat(analysisResult.playerStats.cc)}/100</li>
-                </ul>
-            </div>
-            
-            <div class="stats-column">
-                <h3>Enemy Team</h3>
-                <ul>
-                    <li>Damage: ${formatStat(analysisResult.enemyStats.damage)}/100</li>
-                    <li>Durability: ${formatStat(analysisResult.enemyStats.durability)}/100</li>
-                    <li>Crowd Control: ${formatStat(analysisResult.enemyStats.cc)}/100</li>
-                </ul>
+        <div class="team-stats-container">
+            <div class="team-stats-comparison">
+                <div class="stats-column">
+                    <h3>Your Team</h3>
+                    <ul>
+                        <li>
+                            <span class="stat-label">Damage:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.playerStats.damage)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.playerStats.damage)}/100</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="stat-label">Durability:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.playerStats.durability)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.playerStats.durability)}/100</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="stat-label">CC:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.playerStats.cc)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.playerStats.cc)}/100</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="stats-column">
+                    <h3>Enemy Team</h3>
+                    <ul>
+                        <li>
+                            <span class="stat-label">Damage:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.enemyStats.damage)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.enemyStats.damage)}/100</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="stat-label">Durability:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.enemyStats.durability)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.enemyStats.durability)}/100</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="stat-label">CC:</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width: ${formatStat(analysisResult.enemyStats.cc)}%"></div>
+                                <span class="stat-value">${formatStat(analysisResult.enemyStats.cc)}/100</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         
@@ -443,7 +460,12 @@ export class UI {
                 <div class="hero-images">
                     ${this.gameState.playerPicks.map(heroId => {
                     const hero = this.getHeroById(heroId);
-                    return `<img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">`;
+                    return `
+                            <div class="hero-card">
+                                <img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">
+                                <span class="hero-name">${hero.name}</span>
+                            </div>
+                        `;
                 }).join('')}
                 </div>
             </div>
@@ -452,7 +474,12 @@ export class UI {
                 <div class="hero-images">
                     ${this.gameState.enemyPicks.map(heroId => {
                     const hero = this.getHeroById(heroId);
-                    return `<img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">`;
+                    return `
+                            <div class="hero-card">
+                                <img src="${hero.image}" alt="${hero.name}" title="${hero.name}" class="hero-image">
+                                <span class="hero-name">${hero.name}</span>
+                            </div>
+                        `;
                 }).join('')}
                 </div>
             </div>
@@ -485,7 +512,7 @@ export class UI {
                 </ul>
             </div>
         </div>
-    `;
+        `;
 
         const modal = document.createElement('div');
         modal.className = 'modal';
@@ -494,6 +521,7 @@ export class UI {
 
         const closeButton = document.createElement('button');
         closeButton.textContent = 'Close';
+        closeButton.className = 'close-button';
         closeButton.onclick = () => {
             modal.remove();
             this.hideHeroPool();
