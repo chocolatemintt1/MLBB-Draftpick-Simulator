@@ -35,6 +35,33 @@ export class DraftLogic {
         return composition;
     }
 
+    getMissingRoles(picks) {
+        const strategy = this.teamStrategies[this.gameState.selectedEnemy];
+        const composition = picks.map(id => this.findHeroById(id));
+        const roles = {
+            jungler: false,
+            midlane: false,
+            exp: false,
+            roam: false,
+            gold: false
+        };
+
+        // Check which roles are filled
+        picks.forEach(heroId => {
+            const hero = this.findHeroById(heroId);
+            for (const [role, heroes] of Object.entries(strategy.rolePreference)) {
+                if (heroes.includes(hero.name) && !roles[role]) {
+                    roles[role] = true;
+                    break;
+                }
+            }
+        });
+
+        return Object.entries(roles)
+            .filter(([role, filled]) => !filled)
+            .map(([role]) => role);
+    }
+
     calculateTeamStats(picks) {
         const heroes = picks.map(heroId => this.findHeroById(heroId));
         
@@ -58,28 +85,32 @@ export class DraftLogic {
             this.gameState.isHeroAvailable(hero.id)
         );
 
-        // Prioritize banning heroes that counter the team's playstyle
-        const counterPlaystyleBans = availableHeroes.filter(hero =>
-            this.countersPlaystyle(hero, strategy.playstyle)
-        );
-
-        if (counterPlaystyleBans.length > 0) {
-            return this.getRandomHero(counterPlaystyleBans).id;
-        }
-
-        // Fall back to common bans
-        for (const banName of strategy.commonBans) {
-            const hero = this.findHeroByName(banName);
-            if (hero && this.gameState.isHeroAvailable(hero.id)) {
-                return hero.id;
+        // First phase bans - target meta heroes
+        if (this.gameState.enemyBans.length < 3) {
+            for (const banName of strategy.commonBans) {
+                const hero = this.findHeroByName(banName);
+                if (hero && this.gameState.isHeroAvailable(hero.id)) {
+                    return hero.id;
+                }
             }
         }
 
-        // If all else fails, ban a random strong hero
+        // Second phase bans - counter enemy picks
+        const playerPicks = this.gameState.playerPicks.map(id => this.findHeroById(id));
+        const counterBans = availableHeroes.filter(hero => {
+            return this.isStrongAgainst(hero, playerPicks) && 
+                   strategy.preferredPicks.includes(hero.name);
+        });
+
+        if (counterBans.length > 0) {
+            return this.getRandomHero(counterBans).id;
+        }
+
+        // Default to banning strong heroes
         const strongHeroes = availableHeroes.filter(hero =>
-            (hero.damage + hero.durability + hero.cc) / 3 > 7
+            strategy.preferredPicks.includes(hero.name)
         );
-        return this.getRandomHero(strongHeroes).id;
+        return this.getRandomHero(strongHeroes || availableHeroes).id;
     }
 
     getAIPickSelection(strategy) {
@@ -87,35 +118,58 @@ export class DraftLogic {
             this.gameState.isHeroAvailable(hero.id)
         );
 
-        // Calculate current team composition
-        const currentPicks = this.gameState.enemyPicks.map(id => this.findHeroById(id));
-        const composition = this.getTeamComposition(currentPicks);
-
-        // Prioritize preferred picks that fit the team composition
-        const preferredPicks = strategy.preferredPicks
-            .map(name => this.findHeroByName(name))
-            .filter(hero => hero && this.gameState.isHeroAvailable(hero.id));
-
-        const suitablePicks = preferredPicks.filter(hero =>
-            this.fitsTeamComposition(hero, composition, strategy)
-        );
-
-        if (suitablePicks.length > 0) {
-            return this.getRandomHero(suitablePicks).id;
+        const missingRoles = this.getMissingRoles(this.gameState.enemyPicks);
+        
+        // First pick priority - secure strong meta heroes
+        if (this.gameState.enemyPicks.length === 0) {
+            const priority = strategy.preferredPicks
+                .map(name => this.findHeroByName(name))
+                .filter(hero => hero && this.gameState.isHeroAvailable(hero.id));
+            if (priority.length > 0) return this.getRandomHero(priority).id;
         }
 
-        // If no suitable preferred picks, choose based on team needs
-        const teamNeeds = this.getTeamNeeds(composition, strategy);
-        const suitableHeroes = availableHeroes.filter(hero =>
-            teamNeeds.includes(hero.role) && this.fitsPlaystyle(hero, strategy.playstyle)
-        );
+        // Role-based picking
+        if (missingRoles.length > 0) {
+            const nextRole = missingRoles[0];
+            const roleHeroes = strategy.rolePreference[nextRole]
+                .map(name => this.findHeroByName(name))
+                .filter(hero => hero && this.gameState.isHeroAvailable(hero.id));
 
-        if (suitableHeroes.length > 0) {
-            return this.getRandomHero(suitableHeroes).id;
+            if (roleHeroes.length > 0) {
+                return this.getRandomHero(roleHeroes).id;
+            }
         }
 
-        // If all else fails, pick a random available hero
+        // Counter-picking
+        const playerPicks = this.gameState.playerPicks.map(id => this.findHeroById(id));
+        const counterPicks = availableHeroes.filter(hero =>
+            this.isStrongAgainst(hero, playerPicks) &&
+            strategy.preferredPicks.includes(hero.name)
+        );
+
+        if (counterPicks.length > 0) {
+            return this.getRandomHero(counterPicks).id;
+        }
+
+        // Fallback to preferred picks that are available
+        const preferredAvailable = availableHeroes.filter(hero =>
+            strategy.preferredPicks.includes(hero.name)
+        );
+
+        if (preferredAvailable.length > 0) {
+            return this.getRandomHero(preferredAvailable).id;
+        }
+
         return this.getRandomHero(availableHeroes).id;
+    }
+
+    isStrongAgainst(hero, enemyHeroes) {
+        // Basic counter logic
+        if (hero.role === 'Assassin' && enemyHeroes.some(h => h.role === 'Marksman')) return true;
+        if (hero.role === 'Tank' && enemyHeroes.some(h => h.role === 'Assassin')) return true;
+        if (hero.role === 'Marksman' && enemyHeroes.some(h => h.role === 'Tank')) return true;
+        if (hero.role === 'Mage' && enemyHeroes.some(h => h.role === 'Fighter')) return true;
+        return false;
     }
 
     countersPlaystyle(hero, playstyle) {
@@ -163,6 +217,7 @@ export class DraftLogic {
     }
 
     getRandomHero(heroes) {
+        if (!heroes || heroes.length === 0) return null;
         return heroes[Math.floor(Math.random() * heroes.length)];
     }
 
