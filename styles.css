@@ -106,6 +106,7 @@ body {
     position: relative;
     z-index: 1;
 }
+
 /* Empty slot styling */
 .ban-slot.empty {
     background: rgba(42, 42, 42, 0.5);
@@ -242,16 +243,16 @@ button:hover {
     .picks-bans {
         gap: 5px;
     }
-    
+
     .pick-slot,
     .ban-slot {
         min-height: 50px;
     }
-    
+
     .role-filters {
         gap: 5px;
     }
-    
+
     .role-filters button {
         padding: 5px 8px;
         font-size: 12px;
@@ -262,11 +263,11 @@ button:hover {
     .draft-board {
         grid-template-columns: 1fr;
     }
-    
+
     .picks-bans {
         grid-template-columns: repeat(5, 1fr);
     }
-    
+
     .hero-pool {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
@@ -277,11 +278,11 @@ button:hover {
     .draft-board {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .picks-bans {
         grid-template-columns: repeat(5, 1fr);
     }
-    
+
     .hero-pool {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
@@ -824,4 +825,25 @@ button:hover {
         width: 24px;
         height: 24px;
     }
+}
+
+.draft-message {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.draft-message-good {
+    color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid #4CAF50;
+}
+
+.draft-message-bad {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid #f44336;
 }
