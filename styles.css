@@ -456,8 +456,12 @@ button:hover {
 }
 
 .stats-column {
-    flex: 1;
-    min-width: 280px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .stats-column h3 {
