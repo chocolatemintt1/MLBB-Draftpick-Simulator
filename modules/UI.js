@@ -3,18 +3,16 @@ export class UI {
         this.gameState = gameState;
         this.draftLogic = draftLogic;
         this.teamStrategies = teamStrategies;
-        this.roleOrder = roleOrder;
+        this.roleOrder = ['ALL', ...roleOrder]; // Add ALL to the beginning of roleOrder
         this.teamAnalysis = teamAnalysis;
-        this.currentFilter = null;
+        this.currentFilter = 'ALL'; // Set ALL as default filter
         this.initializeElements();
         this.setupEventListeners();
-        //this.showDesktopViewNotice(); temporary disabled
         this.hideHeroPool();
         this.addFloatingRefreshButton();
-        this.updateTeamCompositionDisplay(); // New method
+        this.updateTeamCompositionDisplay();
         this.countdownTimer = null;
         this.aiThinkingTime = { min: 3000, max: 8000 };
-
 
         this.teamLogos = {
             blacklist: 'assets/teams/blacklist.png',
@@ -26,6 +24,19 @@ export class UI {
             rsg: 'assets/teams/rsg.png',
             omg: 'assets/teams/omg.png',
         };
+    }
+
+    getRoleColor(role) {
+        const colors = {
+            'ALL': 'rgba(128, 128, 128, 0.2)',  // Gray with transparency for ALL
+            'Tank': 'rgba(255, 165, 0, 0.2)',     // Orange with transparency
+            'Mage': 'rgba(0, 127, 255, 0.2)',     // Blue with transparency
+            'Assassin': 'rgba(128, 0, 128, 0.2)', // Purple with transparency
+            'Marksman': 'rgba(255, 215, 0, 0.2)', // Yellow with transparency
+            'Support': 'rgba(0, 128, 0, 0.2)',    // Green with transparency
+            'Fighter': 'rgba(255, 0, 0, 0.2)'     // Red with transparency
+        };
+        return colors[role] || 'transparent';
     }
 
     updateTeamCompositionDisplay() {
@@ -57,12 +68,18 @@ export class UI {
         if (this.gameState.currentTurn === 'enemy') {
             // Add a small delay before showing AI thinking
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             this.showAIThinking();
             await this.simulateAIThinking();
             this.hideAIThinking();
 
             const selectedId = this.draftLogic.processAITurn();
+
+            // Reset filter to ALL after enemy's turn if in ban phase
+            if (this.gameState.phase === 'ban') {
+                this.currentFilter = 'ALL';
+            }
+
             this.updateDisplay();
 
             if (!this.checkGameEnd()) {
@@ -138,15 +155,6 @@ export class UI {
         location.reload();
     }
 
-    handleRoleFilter(event) {
-        const role = event.target.dataset.role;
-        if (role) {
-            this.currentFilter = this.currentFilter === role ? null : role;
-            this.updateRoleFilters();
-            this.renderHeroPool();
-        }
-    }
-
     updateRoleFilters() {
         const buttons = this.roleFilters.querySelectorAll('button');
         buttons.forEach(button => {
@@ -158,12 +166,37 @@ export class UI {
         });
     }
 
+    handleRoleFilter(event) {
+        const role = event.target.dataset.role;
+        if (role) {
+            this.currentFilter = role; // Always set the clicked role as filter, no deselection
+            this.updateRoleFilters();
+            this.renderHeroPool();
+        }
+    }
+
     renderRoleFilters() {
         this.roleFilters.innerHTML = '';
         this.roleOrder.forEach(role => {
             const button = document.createElement('button');
             button.textContent = role;
             button.dataset.role = role;
+            if (role === this.currentFilter) { // Set current filter as active
+                button.classList.add('active');
+            }
+            this.roleFilters.appendChild(button);
+        });
+    }
+
+    renderRoleFilters() {
+        this.roleFilters.innerHTML = '';
+        this.roleOrder.forEach(role => {
+            const button = document.createElement('button');
+            button.textContent = role;
+            button.dataset.role = role;
+            if (role === 'ALL') { // Set Tank button as active by default
+                button.classList.add('active');
+            }
             this.roleFilters.appendChild(button);
         });
     }
@@ -201,10 +234,12 @@ export class UI {
         this.startButton.style.display = 'none';
         this.teamSelect.style.display = 'none';
         this.showHeroPool();
+
+        // ALL filter is selected when draft starts
+        this.currentFilter = 'ALL';
         this.updateDisplay();
         this.startCountdown();
 
-        this.updateDisplay();
         if (this.gameState.currentTurn === 'enemy') {
             await this.processAITurn();
         } else {
@@ -218,7 +253,7 @@ export class UI {
             clearInterval(this.countdownTimer);
         }
 
-        this.timeLeft = 60;
+        this.timeLeft = 40;
         this.updateCountdownDisplay();
         this.countdownTimer = setInterval(() => {
             this.timeLeft--;
@@ -232,19 +267,27 @@ export class UI {
     handleTimeout() {
         clearInterval(this.countdownTimer);
         if (this.gameState.currentTurn === 'player') {
-            // Auto-select a hero for the player and update display immediately
-            const availableHeroes = this.draftLogic.heroes.filter(hero =>
-                this.gameState.isHeroAvailable(hero.id)
-            );
-            if (availableHeroes.length > 0) {
-                const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
-                this.draftLogic.processPlayerSelection(randomHero.id);
+            if (this.gameState.phase === 'ban') {
+                // For banning phase, just add a null/blank ban
+                this.draftLogic.processPlayerSelection(null);
                 this.updateTeamDisplays();
                 this.updatePhaseIndicator();
                 this.renderHeroPool();
+            } else {
+                // For picking phase, auto-select a random hero
+                const availableHeroes = this.draftLogic.heroes.filter(hero =>
+                    this.gameState.isHeroAvailable(hero.id)
+                );
+                if (availableHeroes.length > 0) {
+                    const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
+                    this.draftLogic.processPlayerSelection(randomHero.id);
+                    this.updateTeamDisplays();
+                    this.updatePhaseIndicator();
+                    this.renderHeroPool();
+                }
             }
         }
-        
+
         if (!this.checkGameEnd()) {
             this.processAITurn();
         }
@@ -260,14 +303,14 @@ export class UI {
         if (!heroElement) return;
 
         const heroId = heroElement.dataset.heroId;
-        
+
         // Process player selection and update display immediately
         if (this.draftLogic.processPlayerSelection(heroId)) {
             // Clear existing countdown
             if (this.countdownTimer) {
                 clearInterval(this.countdownTimer);
             }
-            
+
             // Update display immediately to show player's selection
             this.updateTeamDisplays();
             this.updatePhaseIndicator();
@@ -288,9 +331,9 @@ export class UI {
     renderHeroPool() {
         this.heroPool.innerHTML = '';
 
-        const heroesToRender = this.currentFilter
-            ? this.draftLogic.heroes.filter(hero => hero.role === this.currentFilter)
-            : this.draftLogic.heroes;
+        const heroesToRender = this.currentFilter === 'ALL'
+            ? this.draftLogic.heroes
+            : this.draftLogic.heroes.filter(hero => hero.role === this.currentFilter);
 
         heroesToRender.forEach(hero => {
             const heroElement = document.createElement('div');
@@ -302,8 +345,10 @@ export class UI {
                 heroElement.classList.add('banned');
             }
 
+            const roleColor = this.getRoleColor(hero.role);
+
             heroElement.innerHTML = `
-                <div class="hero-card ${isUnavailable ? 'banned' : ''}">
+                <div class="hero-card ${isUnavailable ? 'banned' : ''}" style="background: ${roleColor}">
                     <img src="${hero.image}" alt="${hero.name}" class="hero-image">
                     <div class="hero-info">
                         <div class="hero-name">${hero.name}</div>
@@ -329,17 +374,24 @@ export class UI {
     }
 
     renderSlot(heroId, type) {
+        // Handle null/blank bans
+        if (heroId === null && type === 'ban') {
+            return `<div class="${type}-slot blank-ban">
+                <div class="blank-ban-indicator">-</div>
+            </div>`;
+        }
+
         if (!heroId) return `<div class="${type}-slot empty"></div>`;
 
         const hero = this.getHeroById(heroId);
         if (!hero) return `<div class="${type}-slot empty"></div>`;
 
         return `
-                <div class="${type}-slot">
-                    <img src="${hero.image}" alt="${hero.name}" class="slot-image">
-                    <div class="slot-name">${hero.name}</div>
-                </div>
-            `;
+            <div class="${type}-slot">
+                <img src="${hero.image}" alt="${hero.name}" class="slot-image">
+                <div class="slot-name">${hero.name}</div>
+            </div>
+        `;
     }
 
     updateTeamDisplays() {
