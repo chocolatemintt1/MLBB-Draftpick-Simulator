@@ -170,7 +170,14 @@ const originalHeroes = [
     { id: "ixia", name: "Ixia", role: "Marksman", damage: 7, durability: 3, cc: 5, image: "assets/ixia.webp" },
     { id: "melissa", name: "Melissa", role: "Marksman", damage: 9, durability: 2, cc: 4, image: "assets/melissa.webp" },
     { id: "beatrix", name: "Beatrix", role: "Marksman", damage: 8, durability: 3, cc: 1, image: "assets/beatrix.webp" },
-    { id: "natan", name: "Natan", role: "Marksman", damage: 6, durability: 2, cc: 2, image: "assets/natan.webp" }
+    { id: "natan", name: "Natan", role: "Marksman", damage: 6, durability: 2, cc: 2, image: "assets/natan.webp" },
+
+
+    /*easter eggs*/
+    { id: "kanade", name: "Kanade", role: "Fighter", damage: 10, durability: 10, cc: 10, image: "assets/kanade.webp" },
+    { id: "shinazugawa", name: "Sanemi", role: "Fighter", damage: 1, durability: 1, cc: 1, image: "assets/shinazugawa.png" },
+    { id: "obanai", name: "Obanai", role: "Fighter", damage: 1, durability: 1, cc: 1, image: "assets/obanai.jpg" },
+    { id: "carlo", name: "GOD", role: "Fighter", damage: 99, durability: 99, cc: 99, image: "https://chocolatemintt1.github.io/carloamparo22/pfp_img.jpg" }
 ];
 
 const getHeroRoles = (hero) => {
