@@ -271,16 +271,22 @@ export class DraftLogic {
 
     processPlayerSelection(heroId) {
         if (!this.gameState.canSelectHero()) return false;
-        if (!this.gameState.isHeroAvailable(heroId)) return false;
-
+        
+        // For banning phase, allow null/blank bans
         if (this.gameState.phase === 'ban' && this.gameState.playerBans.length < 5) {
-            this.gameState.playerBans.push(heroId);
-            this.gameState.currentTurn = 'enemy';
-            return true;
+            // If heroId is null, it's a blank ban
+            if (heroId === null || this.gameState.isHeroAvailable(heroId)) {
+                this.gameState.playerBans.push(heroId);
+                this.gameState.currentTurn = 'enemy';
+                return true;
+            }
         } else if (this.gameState.phase === 'pick' && this.gameState.playerPicks.length < 5) {
-            this.gameState.playerPicks.push(heroId);
-            this.gameState.currentTurn = 'enemy';
-            return true;
+            // For picking phase, require valid hero selection
+            if (this.gameState.isHeroAvailable(heroId)) {
+                this.gameState.playerPicks.push(heroId);
+                this.gameState.currentTurn = 'enemy';
+                return true;
+            }
         }
         return false;
     }
