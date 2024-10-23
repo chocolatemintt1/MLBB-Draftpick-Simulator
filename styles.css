@@ -939,3 +939,17 @@ button:hover {
         flex: 0 1 120px;
     }
 }
+
+.blank-ban {
+    background-color: rgba(128, 128, 128, 0.2);
+    border: 2px dashed #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.blank-ban-indicator {
+    font-size: 24px;
+    color: #666;
+    font-weight: bold;
+}
