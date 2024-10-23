@@ -8,7 +8,7 @@ export class UI {
         this.currentFilter = null;
         this.initializeElements();
         this.setupEventListeners();
-        this.showDesktopViewNotice();
+        //this.showDesktopViewNotice(); temporary disabled
         this.hideHeroPool();
         this.addFloatingRefreshButton();
         this.updateTeamCompositionDisplay(); // New method
@@ -55,6 +55,9 @@ export class UI {
 
     async processAITurn() {
         if (this.gameState.currentTurn === 'enemy') {
+            // Add a small delay before showing AI thinking
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
             this.showAIThinking();
             await this.simulateAIThinking();
             this.hideAIThinking();
@@ -164,7 +167,7 @@ export class UI {
             this.roleFilters.appendChild(button);
         });
     }
-
+    /*
     showDesktopViewNotice() {
         const notice = document.createElement('div');
         notice.innerHTML = `
@@ -181,7 +184,7 @@ export class UI {
         `;
         document.body.appendChild(notice);
     }
-
+    */
     async startDraft() {
         this.gameState.selectedEnemy = this.teamSelect.value;
         if (this.gameState.selectedEnemy === 'player') {
@@ -210,6 +213,11 @@ export class UI {
     }
 
     startCountdown() {
+        // This will clear any existing timer
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+        }
+
         this.timeLeft = 60;
         this.updateCountdownDisplay();
         this.countdownTimer = setInterval(() => {
@@ -218,27 +226,27 @@ export class UI {
             if (this.timeLeft <= 0) {
                 this.handleTimeout();
             }
-        }, 2500);
+        }, 1000);
     }
 
     handleTimeout() {
         clearInterval(this.countdownTimer);
         if (this.gameState.currentTurn === 'player') {
-            // Auto-select a hero for the player
+            // Auto-select a hero for the player and update display immediately
             const availableHeroes = this.draftLogic.heroes.filter(hero =>
                 this.gameState.isHeroAvailable(hero.id)
             );
             if (availableHeroes.length > 0) {
                 const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
                 this.draftLogic.processPlayerSelection(randomHero.id);
+                this.updateTeamDisplays();
+                this.updatePhaseIndicator();
+                this.renderHeroPool();
             }
         }
-        this.processAITurn();
-        //this.draftLogic.processAITurn();
-        this.updateDisplay();
-        this.checkGameEnd();
+        
         if (!this.checkGameEnd()) {
-            this.startCountdown();
+            this.processAITurn();
         }
     }
 
@@ -247,14 +255,29 @@ export class UI {
         countdownElement.textContent = `Time left: ${this.timeLeft}s`;
     }
 
-    handleHeroClick(event) {
+    async handleHeroClick(event) {
         const heroElement = event.target.closest('.hero');
         if (!heroElement) return;
 
         const heroId = heroElement.dataset.heroId;
+        
+        // Process player selection and update display immediately
         if (this.draftLogic.processPlayerSelection(heroId)) {
-            clearInterval(this.countdownTimer);
-            this.processAITurn(); // Use the new async method
+            // Clear existing countdown
+            if (this.countdownTimer) {
+                clearInterval(this.countdownTimer);
+            }
+            
+            // Update display immediately to show player's selection
+            this.updateTeamDisplays();
+            this.updatePhaseIndicator();
+            this.renderHeroPool();
+
+            // Check if game has ended after player's move
+            if (!this.checkGameEnd()) {
+                // If game hasn't ended, process AI's turn
+                await this.processAITurn();
+            }
         }
     }
 
@@ -529,8 +552,8 @@ export class UI {
         closeButton.textContent = 'Close';
         closeButton.className = 'close-button';
         closeButton.onclick = () => {
-            modal.remove();
-            this.hideHeroPool();
+            // Refresh the page when close button is clicked
+            location.reload();
         };
         resultsDiv.appendChild(closeButton);
     }
