@@ -121,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         paginatedFeedbacks.forEach(item => {
             const feedbackItem = document.createElement('div');
             feedbackItem.className = 'feedback-item';
+
+	    var text = removeTag(item.text);
             feedbackItem.innerHTML = `
                 <div class="feedback-header">
                     <span class="user-name">${item.userName || 'Anonymous'}</span>
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}
                     </span>
                 </div>
-                <div class="feedback-content">${item.text}</div>
+                <div class="feedback-content">${text}</div>
                 <div class="timestamp">
                     ${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Just now'}
                 </div>
@@ -139,6 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add feedback items and pagination to the container
         feedbackList.appendChild(feedbackItems);
         feedbackList.appendChild(createPaginationControls(allFeedbacks.length));
+    }
+
+    //remove html tags
+    function removeTag(str){
+	if ((str == null) || (str == ''))
+		showStatus('Error saving feedback. Please try again.', true);
+	else
+		str = str.toString();
+	return str.replace(/(<([^>]+)>)/ig, '');
     }
 
     // Load existing feedback from Firebase
