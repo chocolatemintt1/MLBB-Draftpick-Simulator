@@ -110,19 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const endIndex = startIndex + itemsPerPage;
         const paginatedFeedbacks = allFeedbacks.slice(startIndex, endIndex);
         
-        // Clear existing content
         feedbackList.innerHTML = '';
-        
-        // Create feedback items container
         const feedbackItems = document.createElement('div');
         feedbackItems.className = 'feedback-items';
         
-        // Add feedback items
         paginatedFeedbacks.forEach(item => {
             const feedbackItem = document.createElement('div');
             feedbackItem.className = 'feedback-item';
 
-	    var text = removeTag(item.text);
+            var text = removeTag(item.text);
             feedbackItem.innerHTML = `
                 <div class="feedback-header">
                     <span class="user-name">${item.userName || 'Anonymous'}</span>
@@ -134,13 +130,90 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="timestamp">
                     ${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Just now'}
                 </div>
+                <button class="reply-btn">Reply</button>
+                <div class="reply-form hidden">
+                    <input type="text" class="reply-name-input" placeholder="Your Name">
+                    <textarea class="reply-text-input" placeholder="Write your reply..."></textarea>
+                    <div class="reply-controls">
+                        <button class="submit-reply-btn">Submit Reply</button>
+                        <button class="cancel-reply-btn">Cancel</button>
+                    </div>
+                </div>
+                <div class="replies-container">
+                    ${renderReplies(item.replies)}
+                </div>
             `;
+
+            // Add event listeners for reply functionality
+            const replyBtn = feedbackItem.querySelector('.reply-btn');
+            const replyForm = feedbackItem.querySelector('.reply-form');
+            const submitReplyBtn = feedbackItem.querySelector('.submit-reply-btn');
+            const cancelReplyBtn = feedbackItem.querySelector('.cancel-reply-btn');
+            const replyNameInput = feedbackItem.querySelector('.reply-name-input');
+            const replyTextInput = feedbackItem.querySelector('.reply-text-input');
+
+            replyBtn.addEventListener('click', () => {
+                replyForm.classList.remove('hidden');
+            });
+
+            cancelReplyBtn.addEventListener('click', () => {
+                replyForm.classList.add('hidden');
+                replyNameInput.value = '';
+                replyTextInput.value = '';
+            });
+
+            submitReplyBtn.addEventListener('click', async () => {
+                const replyName = replyNameInput.value.trim();
+                const replyText = replyTextInput.value.trim();
+
+                if (!replyName || !replyText) {
+                    showStatus('Please fill in all fields for the reply.', true);
+                    return;
+                }
+
+                try {
+                    const replyRef = ref(database, `feedback/${item.key}/replies`);
+                    const newReplyRef = push(replyRef);
+                    
+                    await set(newReplyRef, {
+                        userName: replyName,
+                        text: replyText,
+                        timestamp: serverTimestamp()
+                    });
+
+                    replyForm.classList.add('hidden');
+                    replyNameInput.value = '';
+                    replyTextInput.value = '';
+                    showStatus('Reply submitted successfully!');
+                } catch (error) {
+                    console.error('Error saving reply:', error);
+                    showStatus('Error saving reply. Please try again.', true);
+                }
+            });
+
             feedbackItems.appendChild(feedbackItem);
         });
         
-        // Add feedback items and pagination to the container
         feedbackList.appendChild(feedbackItems);
         feedbackList.appendChild(createPaginationControls(allFeedbacks.length));
+    }
+    
+     // Helper function to render replies
+     function renderReplies(replies) {
+        if (!replies) return '';
+        
+        return Object.entries(replies)
+            .map(([key, reply]) => `
+                <div class="reply-item">
+                    <div class="reply-header">
+                        <span class="reply-user-name">${reply.userName}</span>
+                        <span class="reply-timestamp">
+                            ${reply.timestamp ? new Date(reply.timestamp).toLocaleString() : 'Just now'}
+                        </span>
+                    </div>
+                    <div class="reply-text">${removeTag(reply.text)}</div>
+                </div>
+            `).join('');
     }
 
     //remove html tags
