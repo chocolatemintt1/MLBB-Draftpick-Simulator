@@ -1,0 +1,231 @@
+:root {
+    --primary-color: #ffd700;
+    --secondary-color: #2a2a2a;
+    --background-color: #1a1a1a;
+    --text-color: #fff;
+    --star-inactive: #4a4a4a;
+    --star-active: #ffd700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h4 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.feedback-form {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.feedback-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    resize: vertical;
+}
+
+.submit-btn {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.3s ease;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.feedback-list {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.feedback-item {
+    background-color: var(--background-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.feedback-item:last-child {
+    margin-bottom: 0;
+}
+
+.timestamp {
+    color: var(--primary-color);
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.status-message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+.status-message.success {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.status-message.error {
+    display: block;
+    background-color: #f44336;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .feedback-form,
+    .feedback-list {
+        padding: 15px;
+    }
+
+    .feedback-item {
+        padding: 10px;
+    }
+}
+
+
+.name-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.star-rating {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.star-rating i {
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--star-inactive);
+    transition: color 0.2s ease;
+}
+
+.star-rating i.active,
+.star-rating i:hover,
+.star-rating i:hover~i {
+    color: var(--star-active);
+}
+
+.feedback-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-name {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.stars-display {
+    color: var(--star-active);
+    font-size: 14px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-btn,
+.page-number {
+    padding: 8px 12px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled),
+.page-number:hover:not(.active) {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.page-number.active {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.feedback-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
