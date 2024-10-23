@@ -124,7 +124,7 @@ export class DraftLogic {
         
         // Define priority roles and their corresponding strong heroes
         const priorityRoles = {
-            Marksman: ['Beatrix', 'Brody', 'Claude', 'Bruno', 'Karrie','Harith', 'Moskov'],
+            Marksman: ['Beatrix', 'Brody', 'Claude', 'Moskov', 'Karrie','Harith'],
             Tank: ['Grock', 'Kaja', 'Khufra', 'Franco', 'Tigreal', 'Chou', 'Hylos', 'Gatot Kaca', 'Arlott', 'Chip'],
             Mage: ['Kagura', 'Lylia', 'Lunox', 'Yve', 'Aurora', 'Vexana', 'Luo Yi', 'Novaria', 'Nana', 'Faramis'],
             Fighter: ['Paquito', 'Yu Zhong', 'Khaleed', 'X.Borg', 'Thamuz', 'Arlott', 'Hylos', 'Gatot Kaca', 'Grock'],
