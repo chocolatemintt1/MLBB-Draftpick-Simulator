@@ -118,58 +118,106 @@ export class DraftLogic {
             this.gameState.isHeroAvailable(hero.id)
         );
 
-        const missingRoles = this.getMissingRoles(this.gameState.enemyPicks);
+        // Get current enemy team composition
+        const currentPicks = this.gameState.enemyPicks.map(id => this.findHeroById(id));
+        const currentRoles = currentPicks.map(hero => hero.role);
         
-        // First pick priority - secure strong meta heroes
+        // Define priority roles and their corresponding strong heroes
+        const priorityRoles = {
+            Marksman: ['Beatrix', 'Brody', 'Claude', 'Bruno', 'Karrie','Harith', 'Moskov'],
+            Tank: ['Grock', 'Kaja', 'Khufra', 'Franco', 'Tigreal', 'Chou', 'Hylos', 'Gatot Kaca', 'Arlott', 'Chip'],
+            Mage: ['Kagura', 'Lylia', 'Lunox', 'Yve', 'Aurora', 'Vexana', 'Luo Yi', 'Novaria', 'Nana', 'Faramis'],
+            Fighter: ['Paquito', 'Yu Zhong', 'Khaleed', 'X.Borg', 'Thamuz', 'Arlott', 'Hylos', 'Gatot Kaca', 'Grock'],
+            Assassin: ['Lancelot', 'Ling', 'Hayabusa', 'Gusion', 'Suyou', 'Fanny', 'Fredrinn', 'Alpha'],
+            Support: ['Angela', 'Estes', 'Rafaela', 'Mathilda', 'Diggie', 'Carmilla']
+        };
+
+        // First pick priority - secure a strong marksman if available
         if (this.gameState.enemyPicks.length === 0) {
-            const priority = strategy.preferredPicks
-                .map(name => this.findHeroByName(name))
-                .filter(hero => hero && this.gameState.isHeroAvailable(hero.id));
-            if (priority.length > 0) return this.getRandomHero(priority).id;
+            const strongMarksman = availableHeroes.find(hero => 
+                hero.role === 'Marksman' && priorityRoles.Marksman.includes(hero.name)
+            );
+            if (strongMarksman) return strongMarksman.id;
         }
 
-        // Role-based picking
-        if (missingRoles.length > 0) {
-            const nextRole = missingRoles[0];
-            const roleHeroes = strategy.rolePreference[nextRole]
-                .map(name => this.findHeroByName(name))
-                .filter(hero => hero && this.gameState.isHeroAvailable(hero.id));
+        // Determine missing core roles
+        const missingRoles = [];
+        if (!currentRoles.includes('Marksman')) missingRoles.push('Marksman');
+        if (!currentRoles.includes('Tank') && !currentRoles.includes('Support')) missingRoles.push('Tank');
+        if (!currentRoles.includes('Mage')) missingRoles.push('Mage');
+        if (!currentRoles.includes('Fighter')) missingRoles.push('Fighter');
+        if (!currentRoles.includes('Assassin')) missingRoles.push('Assassin');
 
-            if (roleHeroes.length > 0) {
-                return this.getRandomHero(roleHeroes).id;
+        // If we have missing roles, prioritize filling them with strong heroes
+        if (missingRoles.length > 0) {
+            for (const role of missingRoles) {
+                const strongHeroesInRole = availableHeroes.filter(hero =>
+                    hero.role === role && priorityRoles[role].includes(hero.name)
+                );
+                
+                if (strongHeroesInRole.length > 0) {
+                    return this.getRandomHero(strongHeroesInRole).id;
+                }
             }
         }
 
-        // Counter-picking
+        // Counter-picking logic
         const playerPicks = this.gameState.playerPicks.map(id => this.findHeroById(id));
         const counterPicks = availableHeroes.filter(hero =>
             this.isStrongAgainst(hero, playerPicks) &&
-            strategy.preferredPicks.includes(hero.name)
+            !currentRoles.includes(hero.role) &&
+            priorityRoles[hero.role].includes(hero.name)
         );
 
         if (counterPicks.length > 0) {
             return this.getRandomHero(counterPicks).id;
         }
 
-        // Fallback to preferred picks that are available
-        const preferredAvailable = availableHeroes.filter(hero =>
-            strategy.preferredPicks.includes(hero.name)
-        );
-
-        if (preferredAvailable.length > 0) {
-            return this.getRandomHero(preferredAvailable).id;
+        // Enhanced role balance check
+        const teamStats = this.calculateTeamStats(this.gameState.enemyPicks);
+        if (teamStats.damage < 6 && !currentRoles.includes('Marksman')) {
+            const damageDealer = availableHeroes.find(hero => 
+                (hero.role === 'Marksman' || hero.role === 'Mage') && 
+                hero.damage >= 7
+            );
+            if (damageDealer) return damageDealer.id;
         }
 
+        if (teamStats.durability < 6 && !currentRoles.includes('Tank')) {
+            const tank = availableHeroes.find(hero => 
+                hero.role === 'Tank' && hero.durability >= 7
+            );
+            if (tank) return tank.id;
+        }
+
+        // Fallback to any available strong hero from priority roles
+        const allStrongHeroes = availableHeroes.filter(hero =>
+            priorityRoles[hero.role]?.includes(hero.name)
+        );
+
+        if (allStrongHeroes.length > 0) {
+            return this.getRandomHero(allStrongHeroes).id;
+        }
+
+        // Last resort - pick any available hero
         return this.getRandomHero(availableHeroes).id;
     }
 
     isStrongAgainst(hero, enemyHeroes) {
-        // Basic counter logic
-        if (hero.role === 'Assassin' && enemyHeroes.some(h => h.role === 'Marksman')) return true;
-        if (hero.role === 'Tank' && enemyHeroes.some(h => h.role === 'Assassin')) return true;
-        if (hero.role === 'Marksman' && enemyHeroes.some(h => h.role === 'Tank')) return true;
-        if (hero.role === 'Mage' && enemyHeroes.some(h => h.role === 'Fighter')) return true;
-        return false;
+        // Enhanced counter logic
+        const counters = {
+            Assassin: ['Marksman', 'Mage'],
+            Tank: ['Assassin', 'Fighter'],
+            Marksman: ['Tank', 'Fighter'],
+            Mage: ['Fighter', 'Support'],
+            Fighter: ['Tank', 'Support'],
+            Support: ['Assassin', 'Mage']
+        };
+
+        return enemyHeroes.some(enemy => 
+            counters[hero.role]?.includes(enemy.role) &&
+            hero.damage >= 7
+        );
     }
 
     countersPlaystyle(hero, playstyle) {
