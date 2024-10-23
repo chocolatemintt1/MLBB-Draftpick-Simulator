@@ -1,8 +1,8 @@
 export const teamStrategies = {
     blacklist: {
         name: 'Blacklist International',
-        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou'],
-        commonBans: ['Fanny', 'Ling', 'Hayabusa', 'Suyou', 'Alpha'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'defensive',
         lateGameFocus: true,
         rolePreference: {
@@ -15,8 +15,8 @@ export const teamStrategies = {
     },
     echo: {
         name: 'Team Liquid Echo Philippines',
-        preferredPicks: ['Fanny', 'Chou', 'Ling', 'Lolita', 'Beatrix', 'Xavier', 'Lylia', 'Khufra', 'Yve', 'Karrie'],
-        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
@@ -29,8 +29,8 @@ export const teamStrategies = {
     },
     onic: {
         name: 'Fanatic ONIC Philippines',
-        preferredPicks: ['Hayabusa', 'Julian', 'Atlas', 'Yve', 'Melissa', 'Valentina', 'Esmeralda', 'Beatrix', 'Khufra', 'Chou'],
-        commonBans: ['Moskov', 'Harith', 'Claude', 'Hylos', 'Gatot Kaca'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
@@ -43,8 +43,8 @@ export const teamStrategies = {
     },
     ap: {
         name: 'Falcons AP Bren',
-        preferredPicks: ['Ling', 'Beatrix', 'Mathilda', 'Valentina', 'Esmeralda', 'Lolita', 'Julian', 'Aamon', 'Karrie', 'Atlas'],
-        commonBans: ['Fanny', 'Ling', 'Gatot Kaca', 'Harith', 'Mathilda'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'aggressive',
         lateGameFocus: true,
         rolePreference: {
@@ -57,8 +57,8 @@ export const teamStrategies = {
     },
     tnc: {
         name: 'TNC',
-        preferredPicks: ['Joy', 'Lancelot', 'Franco', 'Yve', 'Melissa', 'Khufra', 'Valentina', 'Paquito', 'Beatrix', 'Atlas'],
-        commonBans: ['Ling', 'Mathilda', 'Fredrinn', 'Fanny', 'Julian'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'defensive',
         lateGameFocus: true,
         rolePreference: {
@@ -71,8 +71,8 @@ export const teamStrategies = {
     },
     aurora: {
         name: 'Aurora MLBB',
-        preferredPicks: ['Aamon', 'Julian', 'Atlas', 'Xavier', 'Melissa', 'Mathilda', 'Esmeralda', 'Beatrix', 'Khufra', 'Arlott'],
-        commonBans: ['Ling', 'Fanny', 'Faramis', 'Suyou', 'Valentina'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
@@ -85,8 +85,8 @@ export const teamStrategies = {
     },
     rsg: {
         name: 'RSG Philippines',
-        preferredPicks: ['Ling', 'Paquito', 'Lolita', 'Yve', 'Karrie', 'Atlas', 'Valentina', 'Esmeralda', 'Beatrix', 'Mathilda'],
-        commonBans: ['Fanny', 'Joy', 'Julian', 'Fredrinn', 'Arlott'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'aggressive',
         lateGameFocus: false,
         rolePreference: {
@@ -99,8 +99,8 @@ export const teamStrategies = {
     },
     omg: {
         name: 'Smart Omega',
-        preferredPicks: ['Hayabusa', 'Chou', 'Franco', 'Xavier', 'Beatrix', 'Khufra', 'Valentina', 'Julian', 'Melissa', 'Mathilda'],
-        commonBans: ['Ling', 'Fanny', 'Joy', 'Fredrinn', 'Arlott'],
+        preferredPicks: ['Ling', 'Mathilda', 'Hayabusa', 'Valentina', 'Gatot Kaca', 'Lancelot', 'Paquito', 'Alpha', 'Julian', 'Suyou', 'Arlott', 'Fanny', 'Moskov', 'Harith', 'Aurora', 'Valentina', 'Novaria', 'Claude', 'Nolan', 'Fredrinn'],
+        commonBans: ['Gatot Kaca', 'Hylos', 'Hayabusa', 'Suyou', 'Alpha', 'Arlott', 'Khaleed', 'Fanny', 'Moskov', 'Mathilda', 'Aurora'],
         playstyle: 'defensive',
         lateGameFocus: true,
         rolePreference: {
