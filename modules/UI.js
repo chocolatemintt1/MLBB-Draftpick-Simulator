@@ -399,7 +399,10 @@ export class UI {
         <div class="team-stats-container">
             <div class="team-stats-comparison">
                 <div class="stats-column">
-                    <h3>Your Team</h3>
+                    <div class="team-logo-section">
+                        <img src="assets/teams/mpl.png" alt="Your Team" class="team-logo">
+                        <h3>Your Team</h3>
+                    </div>
                     <ul>
                         <li>
                             <span class="stat-label">Damage:</span>
@@ -426,7 +429,10 @@ export class UI {
                 </div>
                 
                 <div class="stats-column">
-                    <h3>Enemy Team</h3>
+                    <div class="team-logo-section">
+                        <img src="${this.teamLogos[this.gameState.selectedEnemy]}" alt="Enemy Team" class="team-logo">
+                        <h3>Enemy Team</h3>
+                    </div>
                     <ul>
                         <li>
                             <span class="stat-label">Damage:</span>
