@@ -6,6 +6,7 @@ export class UI {
         this.roleOrder = ['ALL', ...roleOrder]; // Add ALL to the beginning of roleOrder
         this.teamAnalysis = teamAnalysis;
         this.currentFilter = 'ALL'; // Set ALL as default filter
+        this.playerSide = 'blue'; // Default to blue side
         this.initializeElements();
         this.setupEventListeners();
         this.hideHeroPool();
@@ -13,6 +14,7 @@ export class UI {
         this.updateTeamCompositionDisplay();
         this.countdownTimer = null;
         this.aiThinkingTime = { min: 3000, max: 8000 };
+        this.maxBansPerTeam = 5; // Add this to track max bans
 
         this.teamLogos = {
             blacklist: 'assets/teams/blacklist.png',
@@ -66,12 +68,37 @@ export class UI {
 
     async processAITurn() {
         if (this.gameState.currentTurn === 'enemy') {
+            // Check if we should transition from ban to pick phase
+            if (this.gameState.phase === 'ban' &&
+                this.gameState.playerBans.length >= this.maxBansPerTeam &&
+                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
+                this.gameState.phase = 'pick';
+                // Set the correct starting turn for pick phase based on sides
+                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+                this.updatePhaseIndicator();
+                if (this.gameState.currentTurn === 'player') {
+                    this.startCountdown();
+                    return;
+                }
+            }
+
             // Add a small delay before showing AI thinking
             await new Promise(resolve => setTimeout(resolve, 500));
 
             this.showAIThinking();
             await this.simulateAIThinking();
             this.hideAIThinking();
+
+            // Check if we're in ban phase and already have max bans
+            if (this.gameState.phase === 'ban' && this.gameState.enemyBans.length >= this.maxBansPerTeam) {
+                this.gameState.phase = 'pick';
+                this.updatePhaseIndicator();
+                // If it's player's turn in pick phase, start their countdown
+                if (this.gameState.currentTurn === 'player') {
+                    this.startCountdown();
+                    return;
+                }
+            }
 
             const selectedId = this.draftLogic.processAITurn();
 
@@ -134,6 +161,40 @@ export class UI {
         this.enemyTeamName = document.getElementById('enemyTeamName');
         this.roleFilters = document.getElementById('roleFilters');
         this.heroPool = document.getElementById('heroPool');
+
+        // Add side selection
+        this.createSideSelection();
+    }
+
+    createSideSelection() {
+        const sideSelectContainer = document.createElement('div');
+        sideSelectContainer.className = 'side-select-container';
+
+        const sideSelect = document.createElement('select');
+        sideSelect.id = 'sideSelect';
+        sideSelect.className = 'side-select';
+
+        const blueOption = document.createElement('option');
+        blueOption.value = 'blue';
+        blueOption.textContent = 'Blue Side';
+
+        const redOption = document.createElement('option');
+        redOption.value = 'red';
+        redOption.textContent = 'Red Side';
+
+        sideSelect.appendChild(blueOption);
+        sideSelect.appendChild(redOption);
+
+        sideSelectContainer.appendChild(sideSelect);
+
+        // Insert the side selection before the start button
+        this.startButton.parentNode.insertBefore(sideSelectContainer, this.startButton);
+
+        // Add event listener for side selection
+        sideSelect.addEventListener('change', (e) => {
+            this.playerSide = e.target.value;
+            this.updateTeamDisplays(); // Update the display when side changes
+        });
     }
 
     setupEventListeners() {
@@ -225,7 +286,11 @@ export class UI {
             return;
         }
 
+        // Set up the initial game state based on selected side
+        this.gameState.playerSide = this.playerSide;
+        this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
         this.gameState.phase = 'ban';
+
         this.enemyTeamName.textContent = this.teamStrategies[this.gameState.selectedEnemy].name;
 
         const enemyLogo = document.getElementById('enemyTeamLogo');
@@ -233,13 +298,13 @@ export class UI {
 
         this.startButton.style.display = 'none';
         this.teamSelect.style.display = 'none';
+        document.getElementById('sideSelect').style.display = 'none';
         this.showHeroPool();
 
-        // ALL filter is selected when draft starts
         this.currentFilter = 'ALL';
         this.updateDisplay();
-        this.startCountdown();
 
+        // If enemy starts (red side), process their turn
         if (this.gameState.currentTurn === 'enemy') {
             await this.processAITurn();
         } else {
@@ -266,13 +331,27 @@ export class UI {
 
     handleTimeout() {
         clearInterval(this.countdownTimer);
+
         if (this.gameState.currentTurn === 'player') {
-            if (this.gameState.phase === 'ban') {
-                // For banning phase, just add a null/blank ban
-                this.draftLogic.processPlayerSelection(null);
-                this.updateTeamDisplays();
+            let processed = false;
+
+            // Check if we should transition from ban to pick phase
+            if (this.gameState.phase === 'ban' &&
+                this.gameState.playerBans.length >= this.maxBansPerTeam &&
+                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
+                this.gameState.phase = 'pick';
+                // Set the correct starting turn for pick phase based on sides
+                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
                 this.updatePhaseIndicator();
-                this.renderHeroPool();
+                if (this.gameState.currentTurn === 'enemy') {
+                    this.processAITurn();
+                    return;
+                }
+            }
+
+            if (this.gameState.phase === 'ban') {
+                // For banning phase, add a null/blank ban
+                processed = this.draftLogic.processPlayerSelection(null);
             } else {
                 // For picking phase, auto-select a random hero
                 const availableHeroes = this.draftLogic.heroes.filter(hero =>
@@ -280,16 +359,19 @@ export class UI {
                 );
                 if (availableHeroes.length > 0) {
                     const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
-                    this.draftLogic.processPlayerSelection(randomHero.id);
-                    this.updateTeamDisplays();
-                    this.updatePhaseIndicator();
-                    this.renderHeroPool();
+                    processed = this.draftLogic.processPlayerSelection(randomHero.id);
                 }
             }
-        }
 
-        if (!this.checkGameEnd()) {
-            this.processAITurn();
+            if (processed) {
+                this.updateTeamDisplays();
+                this.updatePhaseIndicator();
+                this.renderHeroPool();
+
+                if (!this.checkGameEnd()) {
+                    this.processAITurn();
+                }
+            }
         }
     }
 
@@ -298,17 +380,41 @@ export class UI {
         countdownElement.textContent = `Time left: ${this.timeLeft}s`;
     }
 
-    async handleHeroClick(event) {
+    handleHeroClick(event) {
         const heroElement = event.target.closest('.hero');
         if (!heroElement) return;
 
         const heroId = heroElement.dataset.heroId;
+
+        // Check if we should transition from ban to pick phase
+        if (this.gameState.phase === 'ban' &&
+            this.gameState.playerBans.length >= this.maxBansPerTeam &&
+            this.gameState.enemyBans.length >= this.maxBansPerTeam) {
+            this.gameState.phase = 'pick';
+            // Set the correct starting turn for pick phase based on sides
+            this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+            this.updatePhaseIndicator();
+            if (this.gameState.currentTurn === 'enemy') {
+                this.processAITurn();
+                return;
+            }
+        }
 
         // Process player selection and update display immediately
         if (this.draftLogic.processPlayerSelection(heroId)) {
             // Clear existing countdown
             if (this.countdownTimer) {
                 clearInterval(this.countdownTimer);
+            }
+
+            // Check if we should transition to pick phase after this ban
+            if (this.gameState.phase === 'ban' &&
+                this.gameState.playerBans.length >= this.maxBansPerTeam &&
+                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
+                this.gameState.phase = 'pick';
+                // Set the correct starting turn for pick phase based on sides
+                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+                this.updatePhaseIndicator();
             }
 
             // Update display immediately to show player's selection
@@ -319,7 +425,7 @@ export class UI {
             // Check if game has ended after player's move
             if (!this.checkGameEnd()) {
                 // If game hasn't ended, process AI's turn
-                await this.processAITurn();
+                this.processAITurn();
             }
         }
     }
@@ -395,17 +501,29 @@ export class UI {
     }
 
     updateTeamDisplays() {
-        document.getElementById('playerBans').innerHTML =
-            this.gameState.playerBans.map(heroId => this.renderSlot(heroId, 'ban')).join('');
+        const playerBansContainer = document.getElementById('playerBans');
+        const enemyBansContainer = document.getElementById('enemyBans');
+        const playerPicksContainer = document.getElementById('playerPicks');
+        const enemyPicksContainer = document.getElementById('enemyPicks');
+        const playerTeamContainer = document.querySelector('#playerTeam');
+        const enemyTeamContainer = document.querySelector('#enemyTeam');
 
-        document.getElementById('enemyBans').innerHTML =
-            this.gameState.enemyBans.map(heroId => this.renderSlot(heroId, 'ban')).join('');
+        // Swap containers based on side selection
+        if (this.playerSide === 'blue') {
+            // Blue side (left side)
+            playerTeamContainer.style.order = '1';
+            enemyTeamContainer.style.order = '2';
+        } else {
+            // Red side (right side)
+            playerTeamContainer.style.order = '2';
+            enemyTeamContainer.style.order = '1';
+        }
 
-        document.getElementById('playerPicks').innerHTML =
-            this.gameState.playerPicks.map(heroId => this.renderSlot(heroId, 'pick')).join('');
-
-        document.getElementById('enemyPicks').innerHTML =
-            this.gameState.enemyPicks.map(heroId => this.renderSlot(heroId, 'pick')).join('');
+        // Update the bans and picks
+        playerBansContainer.innerHTML = this.gameState.playerBans.map(heroId => this.renderSlot(heroId, 'ban')).join('');
+        enemyBansContainer.innerHTML = this.gameState.enemyBans.map(heroId => this.renderSlot(heroId, 'ban')).join('');
+        playerPicksContainer.innerHTML = this.gameState.playerPicks.map(heroId => this.renderSlot(heroId, 'pick')).join('');
+        enemyPicksContainer.innerHTML = this.gameState.enemyPicks.map(heroId => this.renderSlot(heroId, 'pick')).join('');
     }
 
     updateDisplay() {
@@ -446,11 +564,14 @@ export class UI {
         // Generate the draft message based on advantage percentage
         let draftMessage = '';
         if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 2.5) {
-            draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;
-        } else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
-            draftMessage = `<p class="draft-message draft-message-good">Wow! You're a great coach/analyst</p>`;
+            draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;//when the AI outdrafted the player
+        } else if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 10.0) {
+            draftMessage = `<p class="draft-message draft-message-bad">Oh my! Are you for real? You're so bad at this game lol</p>`;//when the player is trolling
+        }
+        else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
+            draftMessage = `<p class="draft-message draft-message-good">Wow! You're a great coach/analyst</p>`;//when the player outdrafted the enemy AI
         } else if (analysisResult.advantage.winner === 'player' && advantagePercentage < 2.5 || analysisResult.advantage.winner === 'enemy' && advantagePercentage < 2.5) {
-            draftMessage = `<p class="draft-message draft-message-draw">It's an even draft, it's up to the mechanics of the players now..</p>`;
+            draftMessage = `<p class="draft-message draft-message-draw">It's an even draft, it's up to the mechanics of the players now..</p>`;//if it's even
         }
 
         const playerRoles = this.draftLogic.getMissingRoles(this.gameState.playerPicks);
