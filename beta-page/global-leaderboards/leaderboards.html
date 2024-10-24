@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="leaderboard-container">
+        <div class="back-button">
+            <a href="../index.html" class="back-link">← Back to Home</a>
+        </div>
+        <div class="leaderboard-header">
+            <h1 class="leaderboard-title">Global Leaderboard</h1>
+            <div class="leaderboard-stats">
+                Total Players: <span id="total-players">0</span>
+            </div>
+        </div>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="rank">Rank</th>
+                    <th>Alias</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
