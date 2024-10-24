@@ -3,40 +3,38 @@ export class DraftLogic {
         this.gameState = gameState;
         this.heroes = heroes;
         this.teamStrategies = teamStrategies;
+        
+        // Define the draft sequence
         this.draftSequence = this.initializeDraftSequence();
         this.currentSequenceIndex = 0;
-        this.currentTurnSelections = [];
     }
 
     initializeDraftSequence() {
-    return [
-        // First Phase Bans (6 total, 3 each)
-        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
-        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
-        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+        // Complete MPL draft sequence
+        return [
+            // First Phase Bans (6 total)
+            { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+            { phase: 'ban', team: 'red', count: 2 },   // Red bans 2
+            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
 
-        // First Phase Picks (6 total, 3 each)
-        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
-        { phase: 'pick', team: 'red', count: 2 },  // Red picks 2
-        { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
-        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+            // First Phase Picks (6 total)
+            { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
+            { phase: 'pick', team: 'red', count: 2 },  // Red picks 2
+            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
 
-        // Second Phase Bans (4 total, 2 each)
-        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
-        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+            // Second Phase Bans (4 total)
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
 
-        // Second Phase Picks (4 total, 2 each)
-        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
-        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
-        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
-        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
-    ];
-}
+            // Second Phase Picks (4 total)
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+        ];
+    }
 
     getCurrentDraftStep() {
         if (this.currentSequenceIndex >= this.draftSequence.length) {
@@ -50,46 +48,7 @@ export class DraftLogic {
         return currentStep && currentStep.team === this.gameState.playerSide;
     }
 
-    getRemainingActionsInCurrentTurn() {
-        const currentStep = this.getCurrentDraftStep();
-        if (!currentStep) return 0;
-        return currentStep.count - this.currentTurnSelections.length;
-    }
-
-    getDraftProgress() {
-        const currentStep = this.getCurrentDraftStep();
-        return {
-            currentPhase: currentStep?.phase || 'complete',
-            currentTeam: currentStep?.team,
-            actionsRemaining: this.getRemainingActionsInCurrentTurn(),
-            totalProgress: this.currentSequenceIndex / this.draftSequence.length,
-            playerBans: this.gameState.playerBans.length,
-            enemyBans: this.gameState.enemyBans.length,
-            playerPicks: this.gameState.playerPicks.length,
-            enemyPicks: this.gameState.enemyPicks.length,
-            selectionsInCurrentTurn: this.currentTurnSelections.length,
-            requiredSelectionsForCurrentTurn: currentStep?.count || 0,
-            isComplete: !currentStep
-        };
-    }
-
-    isGameComplete() {
-        return this.currentSequenceIndex >= this.draftSequence.length;
-    }
-
-    // Add debug method to help track state
-    getDebugState() {
-        return {
-            currentIndex: this.currentSequenceIndex,
-            currentStep: this.getCurrentDraftStep(),
-            currentTurn: this.gameState.currentTurn,
-            selections: this.currentTurnSelections,
-            playerBans: this.gameState.playerBans,
-            enemyBans: this.gameState.enemyBans,
-            playerPicks: this.gameState.playerPicks,
-            enemyPicks: this.gameState.enemyPicks
-        };
-    }
+    
 
     findHeroById(heroId) {
         return this.heroes.find(hero => hero.id === heroId);
@@ -150,7 +109,7 @@ export class DraftLogic {
 
     calculateTeamStats(picks) {
         const heroes = picks.map(heroId => this.findHeroById(heroId));
-
+        
         const totalStats = heroes.reduce((acc, hero) => {
             acc.damage += hero.damage;
             acc.durability += hero.durability;
@@ -184,8 +143,8 @@ export class DraftLogic {
         // Second phase bans - counter enemy picks
         const playerPicks = this.gameState.playerPicks.map(id => this.findHeroById(id));
         const counterBans = availableHeroes.filter(hero => {
-            return this.isStrongAgainst(hero, playerPicks) &&
-                strategy.preferredPicks.includes(hero.name);
+            return this.isStrongAgainst(hero, playerPicks) && 
+                   strategy.preferredPicks.includes(hero.name);
         });
 
         if (counterBans.length > 0) {
@@ -207,10 +166,10 @@ export class DraftLogic {
         // Get current enemy team composition
         const currentPicks = this.gameState.enemyPicks.map(id => this.findHeroById(id));
         const currentRoles = currentPicks.map(hero => hero.role);
-
+        
         // Define priority roles and their corresponding strong heroes
         const priorityRoles = {
-            Marksman: ['Beatrix', 'Brody', 'Claude', 'Moskov', 'Karrie', 'Harith', 'Natan', 'Wanwan'],
+            Marksman: ['Beatrix', 'Brody', 'Claude', 'Moskov', 'Karrie','Harith', 'Natan', 'Wanwan'],
             Tank: ['Grock', 'Kaja', 'Khufra', 'Franco', 'Tigreal', 'Chou', 'Hylos', 'Gatot Kaca', 'Arlott', 'Chip', 'Mathilda', 'Carmilla', 'Edith', 'Lolita'],
             Mage: ['Kagura', 'Lylia', 'Lunox', 'Yve', 'Aurora', 'Vexana', 'Luo Yi', 'Novaria', 'Nana', 'Faramis', 'Zhuxin', 'Zhask', 'Xavier', 'Pharsa', 'Angela'],
             Fighter: ['Paquito', 'Yu Zhong', 'Khaleed', 'X.Borg', 'Thamuz', 'Arlott', 'Hylos', 'Gatot Kaca', 'Grock', 'Lapu-Lapu', 'Cici', 'Benedetta', 'Ruby'],
@@ -220,7 +179,7 @@ export class DraftLogic {
 
         // First pick priority - secure a strong marksman if available
         if (this.gameState.enemyPicks.length === 0) {
-            const strongMarksman = availableHeroes.find(hero =>
+            const strongMarksman = availableHeroes.find(hero => 
                 hero.role === 'Marksman' && priorityRoles.Marksman.includes(hero.name)
             );
             if (strongMarksman) return strongMarksman.id;
@@ -240,7 +199,7 @@ export class DraftLogic {
                 const strongHeroesInRole = availableHeroes.filter(hero =>
                     hero.role === role && priorityRoles[role].includes(hero.name)
                 );
-
+                
                 if (strongHeroesInRole.length > 0) {
                     return this.getRandomHero(strongHeroesInRole).id;
                 }
@@ -262,15 +221,15 @@ export class DraftLogic {
         // Enhanced role balance check
         const teamStats = this.calculateTeamStats(this.gameState.enemyPicks);
         if (teamStats.damage < 6 && !currentRoles.includes('Marksman')) {
-            const damageDealer = availableHeroes.find(hero =>
-                (hero.role === 'Marksman' || hero.role === 'Mage') &&
+            const damageDealer = availableHeroes.find(hero => 
+                (hero.role === 'Marksman' || hero.role === 'Mage') && 
                 hero.damage >= 7
             );
             if (damageDealer) return damageDealer.id;
         }
 
         if (teamStats.durability < 6 && !currentRoles.includes('Tank')) {
-            const tank = availableHeroes.find(hero =>
+            const tank = availableHeroes.find(hero => 
                 hero.role === 'Tank' && hero.durability >= 7
             );
             if (tank) return tank.id;
@@ -300,7 +259,7 @@ export class DraftLogic {
             Support: ['Assassin', 'Mage']
         };
 
-        return enemyHeroes.some(enemy =>
+        return enemyHeroes.some(enemy => 
             counters[hero.role]?.includes(enemy.role) &&
             hero.damage >= 7
         );
@@ -356,64 +315,46 @@ export class DraftLogic {
     }
 
     processPlayerSelection(heroId) {
-        const currentStep = this.getCurrentDraftStep();
-        if (!currentStep || !this.isPlayerTurn()) return false;
-
-        let success = false;
-
-        if (currentStep.phase === 'ban') {
+        if (!this.gameState.canSelectHero()) return false;
+        
+        // For banning phase, allow null/blank bans
+        if (this.gameState.phase === 'ban' && this.gameState.playerBans.length < 5) {
+            // If heroId is null, it's a blank ban
             if (heroId === null || this.gameState.isHeroAvailable(heroId)) {
-                this.currentTurnSelections.push(heroId);
                 this.gameState.playerBans.push(heroId);
-                success = true;
+                this.gameState.currentTurn = 'enemy';
+                return true;
             }
-        } else if (currentStep.phase === 'pick') {
+        } else if (this.gameState.phase === 'pick' && this.gameState.playerPicks.length < 5) {
+            // For picking phase, require valid hero selection
             if (this.gameState.isHeroAvailable(heroId)) {
-                this.currentTurnSelections.push(heroId);
                 this.gameState.playerPicks.push(heroId);
-                success = true;
+                this.gameState.currentTurn = 'enemy';
+                return true;
             }
         }
-
-        // Check if we've completed all actions for this turn
-        if (success && this.currentTurnSelections.length >= currentStep.count) {
-            this.currentSequenceIndex++;
-            this.currentTurnSelections = []; // Reset for next turn
-            this.gameState.currentTurn = 'enemy'; // Explicitly set turn to enemy
-            
-            // Immediately process AI turn if game isn't over
-            if (this.getCurrentDraftStep()) {
-                this.processAITurn();
-            }
-        }
-
-        return success;
+        return false;
     }
 
     processAITurn() {
-        const currentStep = this.getCurrentDraftStep();
-        if (!currentStep || this.isPlayerTurn()) return null;
-
         const strategy = this.teamStrategies[this.gameState.selectedEnemy];
-        const selections = [];
+        let selectedId;
 
-        for (let i = 0; i < currentStep.count; i++) {
-            let selectedId;
-            if (currentStep.phase === 'ban') {
-                selectedId = this.getAIBanSelection(strategy);
-                this.gameState.enemyBans.push(selectedId);
-            } else if (currentStep.phase === 'pick') {
-                selectedId = this.getAIPickSelection(strategy);
-                this.gameState.enemyPicks.push(selectedId);
+        if (this.gameState.phase === 'ban') {
+            selectedId = this.getAIBanSelection(strategy);
+            this.gameState.enemyBans.push(selectedId);
+
+            if (this.gameState.playerBans.length === 5 && this.gameState.enemyBans.length === 5) {
+                this.gameState.phase = 'pick';
             }
-            selections.push(selectedId);
+        } else if (this.gameState.phase === 'pick') {
+            selectedId = this.getAIPickSelection(strategy);
+            this.gameState.enemyPicks.push(selectedId);
         }
 
-        // Move to next turn and set it to player's turn
-        this.currentSequenceIndex++;
         this.gameState.currentTurn = 'player';
-
-        return selections.length === 1 ? selections[0] : selections;
+        this.gameState.turnCount++;
+        return selectedId;
     }
 
     evaluateDraft() {
