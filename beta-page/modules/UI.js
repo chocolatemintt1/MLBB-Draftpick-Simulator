@@ -566,7 +566,7 @@ export class UI {
         let draftMessage = '';
         if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 2.5) {
             draftMessage = `<p class="draft-message draft-message-bad">You didn't draft well</p>`;//when the AI outdrafted the player
-        } else if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 10.0) {
+        } if (analysisResult.advantage.winner === 'enemy' && advantagePercentage > 10.0) {
             draftMessage = `<p class="draft-message draft-message-bad">Oh my! Are you for real? You're so bad at this game lol</p>`;//when the player is trolling
         }
         else if (analysisResult.advantage.winner === 'player' && advantagePercentage > 2.5) {
