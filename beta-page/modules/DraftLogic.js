@@ -9,30 +9,34 @@ export class DraftLogic {
     }
 
     initializeDraftSequence() {
-        return [
-            // First Phase Bans (6 total)
-            { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
-            { phase: 'ban', team: 'red', count: 2 },   // Red bans 2
-            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
-            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+    return [
+        // First Phase Bans (6 total, 3 each)
+        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
 
-            // First Phase Picks (6 total)
-            { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
-            { phase: 'pick', team: 'red', count: 2 },  // Red picks 2
-            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
-            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+        // First Phase Picks (6 total, 3 each)
+        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
+        { phase: 'pick', team: 'red', count: 2 },  // Red picks 2
+        { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
+        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
 
-            // Second Phase Bans (4 total)
-            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
-            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
-            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+        // Second Phase Bans (4 total, 2 each)
+        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+        { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+        { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
 
-            // Second Phase Picks (4 total)
-            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
-            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
-            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
-        ];
-    }
+        // Second Phase Picks (4 total, 2 each)
+        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
+        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+        { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
+        { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+    ];
+}
 
     getCurrentDraftStep() {
         if (this.currentSequenceIndex >= this.draftSequence.length) {
