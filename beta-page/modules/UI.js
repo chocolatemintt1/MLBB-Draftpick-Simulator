@@ -27,6 +27,32 @@ export class UI {
             rsg: '../assets/teams/rsg.png',
             omg: '../assets/teams/omg.png',
         };
+
+        this.draftPhases = {
+            FIRST_BAN: 'first_ban',
+            FIRST_PICK: 'first_pick',
+            SECOND_BAN: 'second_ban',
+            SECOND_PICK: 'second_pick',
+            LAST_BAN: 'last_ban',    // Added last ban phase
+            LAST_PICK: 'last_pick'   // Added last pick phase
+        };
+
+        // Update phase counts to match MPL format
+        this.maxBansFirstPhase = 2;  // Changed from 3 to 2 (first ban phase)
+        this.maxPicksFirstPhase = 2; // Stays the same
+        this.maxBansSecondPhase = 2; // Stays the same
+        this.maxPicksSecondPhase = 2; // Changed from 3 to 2
+        this.maxBansLastPhase = 1;   // Added last ban phase (1 ban each)
+        this.maxPicksLastPhase = 1;  // Added last pick phase (1 pick each)
+        
+        this.gameState.phase = this.draftPhases.FIRST_BAN;
+
+        this.isProcessingAI = false;
+        this.thinkingOverlay = null;
+        this.aiThinkingTime = {
+            min: 2000,  // Reduced from 3000 to 2000
+            max: 5000   // Reduced from 8000 to 5000
+        };
     }
 
     getRoleColor(role) {
@@ -68,80 +94,214 @@ export class UI {
     }
 
     async processAITurn() {
-        if (this.gameState.currentTurn === 'enemy') {
-            // Check if we should transition from ban to pick phase
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-                if (this.gameState.currentTurn === 'player') {
-                    this.startCountdown();
-                    return;
-                }
-            }
+        if (this.gameState.currentTurn === 'enemy' && !this.isProcessingAI) {
+            try {
+                this.isProcessingAI = true;
+                this.showAIThinking();
+                
+                // Check phase transitions
+                this.checkAndTransitionPhase();
 
-            // Add a small delay before showing AI thinking
-            await new Promise(resolve => setTimeout(resolve, 500));
+                // Simulate AI thinking with a timeout
+                await this.simulateAIThinking();
 
-            this.showAIThinking();
-            await this.simulateAIThinking();
-            this.hideAIThinking();
-
-            // Check if we're in ban phase and already have max bans
-            if (this.gameState.phase === 'ban' && this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                this.updatePhaseIndicator();
-                // If it's player's turn in pick phase, start their countdown
-                if (this.gameState.currentTurn === 'player') {
-                    this.startCountdown();
-                    return;
-                }
-            }
-
-            const selectedId = this.draftLogic.processAITurn();
-
-            // Reset filter to ALL after enemy's turn if in ban phase
-            if (this.gameState.phase === 'ban') {
+                // Process the AI's selection
+                const selectedId = this.draftLogic.processAITurn();
                 this.currentFilter = 'ALL';
-            }
+                this.updateDisplay();
 
-            this.updateDisplay();
+                // Hide thinking indicator and cleanup
+                this.hideAIThinking();
+                this.isProcessingAI = false;
 
-            if (!this.checkGameEnd()) {
-                this.startCountdown();
+                // Check for game end or start countdown
+                if (!this.checkGameEnd()) {
+                    this.startCountdown();
+                }
+            } catch (error) {
+                console.error('Error during AI turn:', error);
+                this.hideAIThinking();
+                this.isProcessingAI = false;
             }
         }
     }
 
-    showAIThinking() {
-        const thinkingElement = document.createElement('div');
-        thinkingElement.id = 'ai-thinking';
-        thinkingElement.innerHTML = `
-            <div class="thinking-indicator">
-                <span>Opponent is thinking</span>
-                <div class="dot-animation">
-                    <span>.</span><span>.</span><span>.</span>
+    checkAndTransitionPhase() {
+        const { playerBans, enemyBans, playerPicks, enemyPicks } = this.gameState;
+        const totalBans = playerBans.length + enemyBans.length;
+        const totalPicks = playerPicks.length + enemyPicks.length;
+
+        switch (this.gameState.phase) {
+            case this.draftPhases.FIRST_BAN:
+                if (totalBans === this.maxBansFirstPhase * 2) { // After 4 bans (2 each)
+                    this.gameState.phase = this.draftPhases.FIRST_PICK;
+                    // First pick goes to blue side
+                    this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+                }
+                break;
+
+            case this.draftPhases.FIRST_PICK:
+                if (totalPicks === this.maxPicksFirstPhase * 2) { // After 4 picks (2 each)
+                    this.gameState.phase = this.draftPhases.SECOND_BAN;
+                    // Second ban starts with red side
+                    this.gameState.currentTurn = this.playerSide === 'red' ? 'player' : 'enemy';
+                }
+                break;
+
+            case this.draftPhases.SECOND_BAN:
+                if (totalBans === (this.maxBansFirstPhase + this.maxBansSecondPhase) * 2) { // After 8 bans (4 each)
+                    this.gameState.phase = this.draftPhases.SECOND_PICK;
+                    // Second pick starts with red side
+                    this.gameState.currentTurn = this.playerSide === 'red' ? 'player' : 'enemy';
+                }
+                break;
+
+            case this.draftPhases.SECOND_PICK:
+                if (totalPicks === (this.maxPicksFirstPhase + this.maxPicksSecondPhase) * 2) { // After 8 picks (4 each)
+                    this.gameState.phase = this.draftPhases.LAST_BAN;
+                    // Last ban starts with blue side
+                    this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+                }
+                break;
+
+            case this.draftPhases.LAST_BAN:
+                if (totalBans === (this.maxBansFirstPhase + this.maxBansSecondPhase + this.maxBansLastPhase) * 2) { // After 10 bans (5 each)
+                    this.gameState.phase = this.draftPhases.LAST_PICK;
+                    // Last pick starts with blue side
+                    this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+                }
+                break;
+        }
+    }
+
+    createThinkingOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'ai-thinking-overlay';
+        overlay.innerHTML = `
+            <div class="thinking-container">
+                <div class="thinking-content">
+                    <div class="thinking-spinner"></div>
+                    <div class="thinking-text">
+                        <span>Opponent is thinking</span>
+                        <div class="dot-animation">
+                            <span>.</span><span>.</span><span>.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
-        document.body.appendChild(thinkingElement);
+        return overlay;
     }
 
-    hideAIThinking() {
-        const thinkingElement = document.getElementById('ai-thinking');
-        if (thinkingElement) {
-            thinkingElement.remove();
+    showAIThinking() {
+        if (this.thinkingOverlay) {
+            this.hideAIThinking();
+        }
+
+        this.thinkingOverlay = this.createThinkingOverlay();
+        document.body.appendChild(this.thinkingOverlay);
+
+        // Add CSS styles dynamically if not already present
+        if (!document.getElementById('ai-thinking-styles')) {
+            const styles = document.createElement('style');
+            styles.id = 'ai-thinking-styles';
+            styles.textContent = `
+                .ai-thinking-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    pointer-events: none;
+                }
+
+                .thinking-container {
+                    background: rgba(255, 255, 255, 0.95);
+                    padding: 20px 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .thinking-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                .thinking-spinner {
+                    width: 24px;
+                    height: 24px;
+                    border: 3px solid #f3f3f3;
+                    border-top: 3px solid #3498db;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+
+                .thinking-text {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    font-size: 16px;
+                    color: #333;
+                }
+
+                .dot-animation {
+                    display: flex;
+                    gap: 2px;
+                }
+
+                .dot-animation span {
+                    animation: dots 1.4s infinite;
+                    opacity: 0;
+                }
+
+                .dot-animation span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .dot-animation span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+
+                @keyframes dots {
+                    0%, 100% { opacity: 0; }
+                    50% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(styles);
         }
     }
 
-    simulateAIThinking() {
+    hideAIThinking() {
+        if (this.thinkingOverlay) {
+            this.thinkingOverlay.remove();
+            this.thinkingOverlay = null;
+        }
+    }
+
+    async simulateAIThinking() {
+        // Generate a random thinking time within the specified range
         const thinkingTime = Math.floor(
-            Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + this.aiThinkingTime.min
+            Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + 
+            this.aiThinkingTime.min
         );
-        return new Promise(resolve => setTimeout(resolve, thinkingTime));
+
+        return new Promise(resolve => {
+            setTimeout(resolve, thinkingTime);
+        });
     }
 
     hideHeroPool() {
@@ -305,8 +465,9 @@ export class UI {
         this.currentFilter = 'ALL';
         this.updateDisplay();
 
-        // If enemy starts (red side), process their turn
+        // If enemy starts (red side), show thinking popup and process their turn
         if (this.gameState.currentTurn === 'enemy') {
+            this.showAIThinking();
             await this.processAITurn();
         } else {
             this.startCountdown();
@@ -334,27 +495,13 @@ export class UI {
         clearInterval(this.countdownTimer);
 
         if (this.gameState.currentTurn === 'player') {
+            this.checkAndTransitionPhase();
+            
             let processed = false;
-
-            // Check if we should transition from ban to pick phase
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-                if (this.gameState.currentTurn === 'enemy') {
-                    this.processAITurn();
-                    return;
-                }
-            }
-
-            if (this.gameState.phase === 'ban') {
-                // For banning phase, add a null/blank ban
+            if (this.gameState.phase === this.draftPhases.FIRST_BAN || 
+                this.gameState.phase === this.draftPhases.SECOND_BAN) {
                 processed = this.draftLogic.processPlayerSelection(null);
             } else {
-                // For picking phase, auto-select a random hero
                 const availableHeroes = this.draftLogic.heroes.filter(hero =>
                     this.gameState.isHeroAvailable(hero.id)
                 );
@@ -370,6 +517,8 @@ export class UI {
                 this.renderHeroPool();
 
                 if (!this.checkGameEnd()) {
+                    // Show thinking popup when timeout leads to enemy turn
+                    this.showAIThinking();
                     this.processAITurn();
                 }
             }
@@ -381,52 +530,31 @@ export class UI {
         countdownElement.textContent = `Time left: ${this.timeLeft}s`;
     }
 
-    handleHeroClick(event) {
+    async handleHeroClick(event) {
+        // Prevent click handling if AI is processing
+        if (this.isProcessingAI) return;
+
         const heroElement = event.target.closest('.hero');
         if (!heroElement) return;
 
         const heroId = heroElement.dataset.heroId;
 
-        // Check if we should transition from ban to pick phase
-        if (this.gameState.phase === 'ban' &&
-            this.gameState.playerBans.length >= this.maxBansPerTeam &&
-            this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-            this.gameState.phase = 'pick';
-            // Set the correct starting turn for pick phase based on sides
-            this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-            this.updatePhaseIndicator();
-            if (this.gameState.currentTurn === 'enemy') {
-                this.processAITurn();
-                return;
-            }
-        }
-
-        // Process player selection and update display immediately
         if (this.draftLogic.processPlayerSelection(heroId)) {
             // Clear existing countdown
             if (this.countdownTimer) {
                 clearInterval(this.countdownTimer);
             }
 
-            // Check if we should transition to pick phase after this ban
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-            }
-
-            // Update display immediately to show player's selection
+            // Update display immediately
             this.updateTeamDisplays();
             this.updatePhaseIndicator();
             this.renderHeroPool();
 
             // Check if game has ended after player's move
             if (!this.checkGameEnd()) {
-                // If game hasn't ended, process AI's turn
-                this.processAITurn();
+                // Small delay before AI turn
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await this.processAITurn();
             }
         }
     }
@@ -536,13 +664,29 @@ export class UI {
     }
 
     updatePhaseIndicator() {
-        let phase = '';
-        if (this.gameState.phase === 'ban') {
-            phase = `Banning Phase - ${this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy'} turn`;
-        } else if (this.gameState.phase === 'pick') {
-            phase = `Picking Phase - ${this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy'} turn`;
+        let phaseText = '';
+        switch (this.gameState.phase) {
+            case this.draftPhases.FIRST_BAN:
+                phaseText = '1st Ban Phase (2 bans each)';
+                break;
+            case this.draftPhases.FIRST_PICK:
+                phaseText = '1st Pick Phase (2 picks each)';
+                break;
+            case this.draftPhases.SECOND_BAN:
+                phaseText = '2nd Ban Phase (2 bans each)';
+                break;
+            case this.draftPhases.SECOND_PICK:
+                phaseText = '2nd Pick Phase (2 picks each)';
+                break;
+            case this.draftPhases.LAST_BAN:
+                phaseText = 'Final Ban Phase (1 ban each)';
+                break;
+            case this.draftPhases.LAST_PICK:
+                phaseText = 'Final Pick Phase (1 pick each)';
+                break;
         }
-        this.phaseIndicator.textContent = phase;
+        phaseText += ` - ${this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy'} turn`;
+        this.phaseIndicator.textContent = phaseText;
     }
 
     displayDraftResults(evaluation) {
@@ -733,19 +877,11 @@ export class UI {
     }
 
     checkGameEnd() {
-        if (this.gameState.playerPicks.length === 5 && this.gameState.enemyPicks.length === 5) {
+        const totalPicks = this.gameState.playerPicks.length + this.gameState.enemyPicks.length;
+        if (totalPicks === (this.maxPicksFirstPhase + this.maxPicksSecondPhase + this.maxPicksLastPhase) * 2) {
             clearInterval(this.countdownTimer);
             const evaluation = this.draftLogic.evaluateDraft();
             this.displayDraftResults(evaluation);
-
-            // Reset game state after showing results
-            setTimeout(() => {
-                this.gameState.reset();
-                this.updateDisplay();
-                this.startButton.style.display = 'block';
-                this.teamSelect.style.display = 'block';
-                this.hideHeroPool();
-            }, 1000);
             return true;
         }
         return false;
