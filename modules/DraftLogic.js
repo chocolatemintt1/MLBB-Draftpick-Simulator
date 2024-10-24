@@ -3,7 +3,52 @@ export class DraftLogic {
         this.gameState = gameState;
         this.heroes = heroes;
         this.teamStrategies = teamStrategies;
+        
+        // Define the draft sequence
+        this.draftSequence = this.initializeDraftSequence();
+        this.currentSequenceIndex = 0;
     }
+
+    initializeDraftSequence() {
+        // Complete MPL draft sequence
+        return [
+            // First Phase Bans (6 total)
+            { phase: 'ban', team: 'blue', count: 1 },  // Blue bans 1
+            { phase: 'ban', team: 'red', count: 2 },   // Red bans 2
+            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+
+            // First Phase Picks (6 total)
+            { phase: 'pick', team: 'blue', count: 1 }, // Blue picks 1
+            { phase: 'pick', team: 'red', count: 2 },  // Red picks 2
+            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+
+            // Second Phase Bans (4 total)
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+            { phase: 'ban', team: 'blue', count: 2 },  // Blue bans 2
+            { phase: 'ban', team: 'red', count: 1 },   // Red bans 1
+
+            // Second Phase Picks (4 total)
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+            { phase: 'pick', team: 'blue', count: 2 }, // Blue picks 2
+            { phase: 'pick', team: 'red', count: 1 },  // Red picks 1
+        ];
+    }
+
+    getCurrentDraftStep() {
+        if (this.currentSequenceIndex >= this.draftSequence.length) {
+            return null;
+        }
+        return this.draftSequence[this.currentSequenceIndex];
+    }
+
+    isPlayerTurn() {
+        const currentStep = this.getCurrentDraftStep();
+        return currentStep && currentStep.team === this.gameState.playerSide;
+    }
+
+    
 
     findHeroById(heroId) {
         return this.heroes.find(hero => hero.id === heroId);
@@ -124,12 +169,12 @@ export class DraftLogic {
         
         // Define priority roles and their corresponding strong heroes
         const priorityRoles = {
-            Marksman: ['Beatrix', 'Brody', 'Claude', 'Moskov', 'Karrie','Harith'],
-            Tank: ['Grock', 'Kaja', 'Khufra', 'Franco', 'Tigreal', 'Chou', 'Hylos', 'Gatot Kaca', 'Arlott', 'Chip'],
-            Mage: ['Kagura', 'Lylia', 'Lunox', 'Yve', 'Aurora', 'Vexana', 'Luo Yi', 'Novaria', 'Nana', 'Faramis'],
-            Fighter: ['Paquito', 'Yu Zhong', 'Khaleed', 'X.Borg', 'Thamuz', 'Arlott', 'Hylos', 'Gatot Kaca', 'Grock'],
-            Assassin: ['Lancelot', 'Ling', 'Hayabusa', 'Gusion', 'Suyou', 'Fanny', 'Fredrinn', 'Alpha'],
-            Support: ['Angela', 'Estes', 'Rafaela', 'Mathilda', 'Diggie', 'Carmilla']
+            Marksman: ['Beatrix', 'Brody', 'Claude', 'Moskov', 'Karrie','Harith', 'Natan', 'Wanwan'],
+            Tank: ['Grock', 'Kaja', 'Khufra', 'Franco', 'Tigreal', 'Chou', 'Hylos', 'Gatot Kaca', 'Arlott', 'Chip', 'Mathilda', 'Carmilla', 'Edith', 'Lolita'],
+            Mage: ['Kagura', 'Lylia', 'Lunox', 'Yve', 'Aurora', 'Vexana', 'Luo Yi', 'Novaria', 'Nana', 'Faramis', 'Zhuxin', 'Zhask', 'Xavier', 'Pharsa', 'Angela'],
+            Fighter: ['Paquito', 'Yu Zhong', 'Khaleed', 'X.Borg', 'Thamuz', 'Arlott', 'Hylos', 'Gatot Kaca', 'Grock', 'Lapu-Lapu', 'Cici', 'Benedetta', 'Ruby'],
+            Assassin: ['Lancelot', 'Ling', 'Hayabusa', 'Joy', 'Suyou', 'Fanny', 'Fredrinn', 'Alpha', 'Yi Sun-shin'],
+            Support: ['Angela', 'Estes', 'Rafaela', 'Mathilda', 'Diggie', 'Carmilla', 'Angela', 'Lolita']
         };
 
         // First pick priority - secure a strong marksman if available
