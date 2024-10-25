@@ -34,17 +34,10 @@ export class UI {
 
     async initializeAuthSystem() {
         try {
-            // Import the LoginUI class dynamically
-            const { LoginUI } = await import('./firebase-config.js');
-            this.loginUI = new LoginUI();
-            this.authSystem = this.loginUI.authSystem;
+            const { FirebaseAuthModal } = await import('../modules/firebase-auth.js');
+            this.authModal = new FirebaseAuthModal();
         } catch (error) {
             console.error('Failed to initialize auth system:', error);
-            // Set up fallback auth system with dummy methods
-            this.authSystem = {
-                isLoggedIn: () => false,
-                saveScore: async () => false
-            };
         }
     }
 
@@ -740,32 +733,11 @@ export class UI {
         const saveScoreButton = document.createElement('button');
         saveScoreButton.textContent = 'Save Score';
         saveScoreButton.className = 'save-score-button';
-        saveScoreButton.onclick = async () => {
-            try {
-                if (!this.authSystem) {
-                    console.error('Auth system not initialized');
-                    alert('Authentication system is not available. Please try again later.');
-                    return;
-                }
-
-                if (this.authSystem.isLoggedIn()) {
-                    const saved = await this.authSystem.saveScore(advantagePercentage);
-                    if (saved) {
-                        alert('Score saved successfully!');
-                    } else {
-                        alert('Failed to save score. Please try again.');
-                    }
-                } else {
-                    if (this.loginUI) {
-                        this.loginUI.pendingScore = advantagePercentage;
-                        this.loginUI.showLoginModal();
-                    } else {
-                        alert('Please log in to save your score.');
-                    }
-                }
-            } catch (error) {
-                console.error('Error saving score:', error);
-                alert('An error occurred while saving the score. Please try again.');
+        saveScoreButton.onclick = () => {
+            if (this.authModal) {
+                this.authModal.show(advantagePercentage);
+            } else {
+                alert('Authentication system is not available. Please try again later.');
             }
         };
         resultsDiv.appendChild(saveScoreButton);
