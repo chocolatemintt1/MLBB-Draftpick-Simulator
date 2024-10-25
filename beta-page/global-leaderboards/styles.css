@@ -200,10 +200,6 @@ body {
         padding: 1rem 0.75rem;
     }
 
-    .username-column {
-        display: none;
-    }
-
     .player-column {
         min-width: unset;
     }
