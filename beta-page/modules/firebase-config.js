@@ -1,7 +1,6 @@
-// Initialize Firebase (Add this at the start of your file)
+import { getAuth, signInWithusernameAndPassword } from 'firebase/auth';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD7y2XwoDAydL4hMNH7NQnWNly87p29Sak",
@@ -18,164 +17,165 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export class AuthSystem {
+export class FirebaseAuthModal {
     constructor() {
-        this.currentUser = null;
+        this.modal = null;
+        this.auth = getAuth();
+        this.db = getFirestore();
     }
 
-    async login(username, password) {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, `${username}@yourdomain.com`, password);
-            this.currentUser = userCredential.user;
-            return true;
-        } catch (error) {
-            console.error("Login error:", error);
-            return false;
-        }
-    }
-
-    async register(username, password) {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, `${username}@yourdomain.com`, password);
-            this.currentUser = userCredential.user;
-            
-            // Create user document in Firestore
-            await setDoc(doc(db, "users", this.currentUser.uid), {
-                username: username,
-                score: 0,
-                gamesPlayed: 0
-            });
-            
-            return true;
-        } catch (error) {
-            console.error("Registration error:", error);
-            return false;
-        }
-    }
-
-    async saveScore(advantagePercentage) {
-        if (!this.currentUser) return false;
-
-        try {
-            const userDoc = doc(db, "users", this.currentUser.uid);
-            const userData = await getDoc(userDoc);
-            
-            if (userData.exists()) {
-                const currentData = userData.data();
-                let newScore = currentData.score;
-                
-                // Add point if player drafted well (advantage > 2.5%)
-                if (advantagePercentage > 2.5) {
-                    newScore += 1;
-                }
-
-                await updateDoc(userDoc, {
-                    score: newScore,
-                    gamesPlayed: currentData.gamesPlayed + 1
-                });
-
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error("Score saving error:", error);
-            return false;
-        }
-    }
-
-    isLoggedIn() {
-        return this.currentUser !== null;
-    }
-
-    logout() {
-        this.currentUser = null;
-        auth.signOut();
-    }
-}
-
-// Modify the UI class to include login functionality
-export class LoginUI {
-    constructor() {
-        this.authSystem = new AuthSystem();
-        this.createLoginModal();
-    }
-
-    createLoginModal() {
+    createModal() {
         const modal = document.createElement('div');
-        modal.className = 'login-modal';
+        modal.className = 'auth-modal';
         modal.innerHTML = `
-            <div class="login-container">
+            <div class="auth-modal-content">
                 <h2>Login to Save Score</h2>
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="username">Username:</label>
-                        <input type="text" id="username" required>
+                        <label for="username">username:</label>
+                        <input type="username" id="username" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password:</label>
                         <input type="password" id="password" required>
                     </div>
+                    <div class="error-message"></div>
                     <div class="button-group">
-                        <button type="submit" id="loginButton">Login</button>
-                        <button type="button" id="registerButton">Register</button>
+                        <button type="submit" class="login-button">Login & Save</button>
+                        <button type="button" class="cancel-button">Cancel</button>
                     </div>
                 </form>
-                <div id="loginMessage"></div>
             </div>
         `;
 
-        document.body.appendChild(modal);
-        this.setupLoginListeners();
+        // Add styles
+        const styles = document.createElement('style');
+        styles.textContent = `
+            .auth-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .auth-modal-content {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 400px;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .button-group {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .button-group button {
+                flex: 1;
+                padding: 0.5rem;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .login-button {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+            .cancel-button {
+                background-color: #f44336;
+                color: white;
+            }
+
+            .error-message {
+                color: red;
+                margin-top: 0.5rem;
+            }
+        `;
+
+        document.head.appendChild(styles);
+        return modal;
     }
 
-    setupLoginListeners() {
-        const loginForm = document.getElementById('loginForm');
-        const registerButton = document.getElementById('registerButton');
-        const loginMessage = document.getElementById('loginMessage');
+    async saveScore(score, username) {
+        try {
+            const scoresCollection = collection(this.db, 'scores');
+            await addDoc(scoresCollection, {
+                username: username,
+                score: score,
+                timestamp: new Date()
+            });
+            return true;
+        } catch (error) {
+            console.error('Error saving score:', error);
+            return false;
+        }
+    }
 
-        loginForm.addEventListener('submit', async (e) => {
+    show(score) {
+        this.modal = this.createModal();
+        document.body.appendChild(this.modal);
+
+        const form = this.modal.querySelector('#loginForm');
+        const errorMessage = this.modal.querySelector('.error-message');
+        const cancelButton = this.modal.querySelector('.cancel-button');
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const username = form.querySelector('#username').value;
+            const password = form.querySelector('#password').value;
 
-            const success = await this.authSystem.login(username, password);
-            if (success) {
-                loginMessage.textContent = 'Login successful!';
-                loginMessage.style.color = 'green';
-                this.hideLoginModal();
-                // Save score if applicable
-                if (this.pendingScore) {
-                    await this.authSystem.saveScore(this.pendingScore);
-                    this.pendingScore = null;
+            try {
+                // Sign in user
+                await signInWithusernameAndPassword(this.auth, username, password);
+
+                // Save score
+                const saved = await this.saveScore(score, username);
+                if (saved) {
+                    alert('Score saved successfully!');
+                    this.close();
+                } else {
+                    errorMessage.textContent = 'Failed to save score. Please try again.';
                 }
-            } else {
-                loginMessage.textContent = 'Login failed. Please try again.';
-                loginMessage.style.color = 'red';
+            } catch (error) {
+                errorMessage.textContent = 'Invalid username or password';
             }
         });
 
-        registerButton.addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            const success = await this.authSystem.register(username, password);
-            if (success) {
-                loginMessage.textContent = 'Registration successful! You can now login.';
-                loginMessage.style.color = 'green';
-            } else {
-                loginMessage.textContent = 'Registration failed. Please try again.';
-                loginMessage.style.color = 'red';
-            }
+        cancelButton.addEventListener('click', () => {
+            this.close();
         });
     }
 
-    showLoginModal() {
-        const modal = document.querySelector('.login-modal');
-        modal.style.display = 'flex';
-    }
-
-    hideLoginModal() {
-        const modal = document.querySelector('.login-modal');
-        modal.style.display = 'none';
+    close() {
+        if (this.modal) {
+            this.modal.remove();
+            this.modal = null;
+        }
     }
 }
