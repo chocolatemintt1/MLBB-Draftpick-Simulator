@@ -288,7 +288,7 @@ export class UI {
             <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                         background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; 
                         border-radius: 10px; text-align: center; z-index: 1000;">
-                <p>This page is still under development, so you may encounter numerous bugs. In some cases, the web app may crash or freeze.</p>
+                <p>This webpage is being used for developers testing and experimentation, so you may encounter numerous bugs. In some cases, the web app may crash or freeze.</p>
                 <button onclick="this.parentElement.style.display='none';" 
                         style="background-color: #ffd700; color: black; border: none; 
                                padding: 10px 20px; margin-top: 10px; cursor: pointer;">
