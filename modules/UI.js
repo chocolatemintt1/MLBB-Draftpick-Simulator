@@ -176,11 +176,11 @@ export class UI {
 
         const blueOption = document.createElement('option');
         blueOption.value = 'blue';
-        blueOption.textContent = 'Blue Side';
+        blueOption.textContent = 'Team First Pick';
 
         const redOption = document.createElement('option');
         redOption.value = 'red';
-        redOption.textContent = 'Red Side';
+        redOption.textContent = 'Enemy First Pick';
 
         sideSelect.appendChild(blueOption);
         sideSelect.appendChild(redOption);
