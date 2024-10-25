@@ -1,0 +1,211 @@
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #1e293b;
+    --background-color: #0f172a;
+    --text-color: #e2e8f0;
+    --input-background: #1e293b;
+    --error-color: #ef4444;
+    --success-color: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: clamp(1rem, 5vw, 2rem);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    line-height: 1.5;
+}
+
+.signup-container {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-radius: clamp(12px, 2vw, 16px);
+    width: min(100%, 440px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.form-group {
+    margin-bottom: clamp(1.25rem, 3vw, 1.5rem);
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: clamp(0.375rem, 1vw, 0.5rem);
+    color: var(--text-color);
+    font-size: clamp(0.813rem, 2vw, 0.875rem);
+    font-weight: 500;
+}
+
+input {
+    width: 100%;
+    padding: clamp(0.75rem, 2vw, 0.875rem) clamp(0.875rem, 2vw, 1rem);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: clamp(6px, 1.5vw, 8px);
+    background-color: var(--input-background);
+    color: var(--text-color);
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    transition: all 0.2s ease;
+}
+
+/* Increase touch target size on mobile */
+@media (max-width: 480px) {
+    input {
+        min-height: 48px;
+    }
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-color);
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-background) inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: clamp(0.688rem, 1.5vw, 0.75rem);
+    margin-top: 0.375rem;
+    min-height: 1rem;
+}
+
+button {
+    width: 100%;
+    padding: clamp(0.75rem, 2vw, 0.875rem);
+    border-radius: clamp(6px, 1.5vw, 8px);
+    font-size: clamp(0.813rem, 2vw, 0.875rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 48px; /* Ensures good touch target on mobile */
+}
+
+button[type="submit"] {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    margin-bottom: clamp(0.875rem, 2vw, 1rem);
+}
+
+button[type="submit"]:hover {
+    background-color: #4f46e5;
+    transform: translateY(-1px);
+}
+
+/* Remove hover effect on touch devices */
+@media (hover: none) {
+    button[type="submit"]:hover {
+        transform: none;
+    }
+}
+
+button[type="button"] {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+button[type="button"]:hover {
+    background-color: rgba(148, 163, 184, 0.1);
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.success-message {
+    color: var(--success-color);
+    text-align: center;
+    margin-top: clamp(0.875rem, 2vw, 1rem);
+    font-size: clamp(0.813rem, 2vw, 0.875rem);
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(clamp(8px, 2vw, 10px)); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.signup-container {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        padding: 1rem;
+        min-height: auto;
+        align-items: flex-start;
+    }
+
+    .signup-container {
+        margin: 1rem auto;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* High resolution screens */
+@media (min-width: 1920px) {
+    .signup-container {
+        max-width: 480px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    input, button {
+        font-size: 1rem;
+    }
+}
+
+/* Support for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .signup-container {
+        animation: none;
+    }
+
+    * {
+        transition-duration: 0.01ms !important;
+    }
+}
