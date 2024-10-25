@@ -34,8 +34,15 @@ body {
     width: 100%;
 }
 
-.team {
-    background: var(--secondary-color);
+.team-red {
+    background-color: rgba(247, 108, 108, 0.3);
+    padding: clamp(10px, 3vw, 20px);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.team-blue {
+    background-color: rgba(33, 55, 216, 0.3);
     padding: clamp(10px, 3vw, 20px);
     border-radius: 8px;
     width: 100%;
