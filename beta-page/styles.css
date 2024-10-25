@@ -1018,3 +1018,18 @@ button:hover {
         border-color: #5a5a5a;
     }
 }
+
+.save-score-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.save-score-button:hover {
+    background-color: #45a049;
+}

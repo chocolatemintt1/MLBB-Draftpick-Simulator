@@ -1,5 +1,5 @@
 export class UI {
-    constructor(gameState, draftLogic, teamStrategies, roleOrder, teamAnalysis) {
+    constructor(gameState, draftLogic, teamStrategies, roleOrder, teamAnalysis,) {
         this.gameState = gameState;
         this.draftLogic = draftLogic;
         this.teamStrategies = teamStrategies;
@@ -17,6 +17,9 @@ export class UI {
         this.aiThinkingTime = { min: 3000, max: 8000 };
         this.maxBansPerTeam = 5; // Add this to track max bans
 
+        // Initialize Firebase Auth System
+        this.initializeAuthSystem();
+
         this.teamLogos = {
             blacklist: '../assets/teams/blacklist.png',
             echo: '../assets/teams/tlph.png',
@@ -27,6 +30,22 @@ export class UI {
             rsg: '../assets/teams/rsg.png',
             omg: '../assets/teams/omg.png',
         };
+    }
+
+    async initializeAuthSystem() {
+        try {
+            // Import the LoginUI class dynamically
+            const { LoginUI } = await import('./firebase-config.js');
+            this.loginUI = new LoginUI();
+            this.authSystem = this.loginUI.authSystem;
+        } catch (error) {
+            console.error('Failed to initialize auth system:', error);
+            // Set up fallback auth system with dummy methods
+            this.authSystem = {
+                isLoggedIn: () => false,
+                saveScore: async () => false
+            };
+        }
     }
 
     getRoleColor(role) {
@@ -269,7 +288,7 @@ export class UI {
             <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                         background-color: rgba(0, 0, 0, 0.8); color: white; padding: 20px; 
                         border-radius: 10px; text-align: center; z-index: 1000;">
-                <p>This page is still under development, so you may encounter numerous bugs. In some cases, the web app may crash or freeze.</p>
+                <p>This webpage is being used for developers testing and experimentation, so you may encounter numerous bugs. In some cases, the web app may crash or freeze.</p>
                 <button onclick="this.parentElement.style.display='none';" 
                         style="background-color: #ffd700; color: black; border: none; 
                                padding: 10px 20px; margin-top: 10px; cursor: pointer;">
@@ -545,7 +564,7 @@ export class UI {
         this.phaseIndicator.textContent = phase;
     }
 
-    displayDraftResults(evaluation) {
+    async displayDraftResults(evaluation) {
         const existingResults = document.querySelector('.modal');
         if (existingResults) {
             existingResults.remove();
@@ -716,6 +735,40 @@ export class UI {
             </div>
         </div>
         `;
+
+        // Add a save score button to the results div
+        const saveScoreButton = document.createElement('button');
+        saveScoreButton.textContent = 'Save Score';
+        saveScoreButton.className = 'save-score-button';
+        saveScoreButton.onclick = async () => {
+            try {
+                if (!this.authSystem) {
+                    console.error('Auth system not initialized');
+                    alert('Authentication system is not available. Please try again later.');
+                    return;
+                }
+
+                if (this.authSystem.isLoggedIn()) {
+                    const saved = await this.authSystem.saveScore(advantagePercentage);
+                    if (saved) {
+                        alert('Score saved successfully!');
+                    } else {
+                        alert('Failed to save score. Please try again.');
+                    }
+                } else {
+                    if (this.loginUI) {
+                        this.loginUI.pendingScore = advantagePercentage;
+                        this.loginUI.showLoginModal();
+                    } else {
+                        alert('Please log in to save your score.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving score:', error);
+                alert('An error occurred while saving the score. Please try again.');
+            }
+        };
+        resultsDiv.appendChild(saveScoreButton);
 
         const modal = document.createElement('div');
         modal.className = 'modal';
