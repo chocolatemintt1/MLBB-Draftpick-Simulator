@@ -1,5 +1,5 @@
 export class UI {
-    constructor(gameState, draftLogic, teamStrategies, roleOrder, teamAnalysis,) {
+    constructor(gameState, draftLogic, teamStrategies, roleOrder, teamAnalysis) {
         this.gameState = gameState;
         this.draftLogic = draftLogic;
         this.teamStrategies = teamStrategies;
@@ -12,13 +12,11 @@ export class UI {
         this.hideHeroPool();
         this.addFloatingRefreshButton();
         this.updateTeamCompositionDisplay();
-        this.showNotice(); // in BETA page notice
+        this.showNotice();
         this.countdownTimer = null;
+        this.timeLeft = 40; // Default time
         this.aiThinkingTime = { min: 3000, max: 8000 };
         this.maxBansPerTeam = 5; // Add this to track max bans
-
-        // Initialize Firebase Auth System
-        this.initializeAuthSystem();
 
         this.teamLogos = {
             blacklist: '../assets/teams/blacklist.png',
@@ -30,15 +28,6 @@ export class UI {
             rsg: '../assets/teams/rsg.png',
             omg: '../assets/teams/omg.png',
         };
-    }
-
-    async initializeAuthSystem() {
-        try {
-            const { FirebaseAuthModal } = await import('../modules/firebase-auth.js');
-            this.authModal = new FirebaseAuthModal();
-        } catch (error) {
-            console.error('Failed to initialize auth system:', error);
-        }
     }
 
     getRoleColor(role) {
@@ -81,38 +70,49 @@ export class UI {
 
     async processAITurn() {
         if (this.gameState.currentTurn === 'enemy') {
-            // Check if we should transition from ban to pick phase
+            // Clear any existing timer when AI turn starts
+            if (this.countdownTimer) {
+                clearInterval(this.countdownTimer);
+            }
+
+            // Check for ban to pick phase transition
             if (this.gameState.phase === 'ban' &&
                 this.gameState.playerBans.length >= this.maxBansPerTeam &&
                 this.gameState.enemyBans.length >= this.maxBansPerTeam) {
                 this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
                 this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
                 this.updatePhaseIndicator();
+                this.scrollToDraftBoard();
                 if (this.gameState.currentTurn === 'player') {
                     this.startCountdown();
                     return;
                 }
             }
+
+            // Start enemy countdown
+            this.startCountdown();
 
             // Add a small delay before showing AI thinking
             await new Promise(resolve => setTimeout(resolve, 500));
 
             this.showAIThinking();
-            await this.simulateAIThinking();
+            
+            // Calculate a random thinking time between min and max
+            const thinkingTime = Math.floor(
+                Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + this.aiThinkingTime.min
+            );
+            
+            // Wait for AI thinking animation
+            await new Promise(resolve => setTimeout(resolve, thinkingTime));
+            
             this.hideAIThinking();
 
-            // Check if we're in ban phase and already have max bans
-            if (this.gameState.phase === 'ban' && this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                this.updatePhaseIndicator();
-                // If it's player's turn in pick phase, start their countdown
-                if (this.gameState.currentTurn === 'player') {
-                    this.startCountdown();
-                    return;
-                }
+            // Clear the countdown timer
+            if (this.countdownTimer) {
+                clearInterval(this.countdownTimer);
             }
 
+            // Process the AI's selection
             const selectedId = this.draftLogic.processAITurn();
 
             // Reset filter to ALL after enemy's turn if in ban phase
@@ -121,10 +121,20 @@ export class UI {
             }
 
             this.updateDisplay();
+            this.scrollToDraftBoard();
 
             if (!this.checkGameEnd()) {
+                // Start countdown for next turn
                 this.startCountdown();
             }
+        }
+    }
+
+    // Add new method to handle scrolling
+    scrollToDraftBoard() {
+        const draftBoard = document.querySelector('.phase-indicator');
+        if (draftBoard) {
+            draftBoard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
@@ -274,7 +284,7 @@ export class UI {
             this.roleFilters.appendChild(button);
         });
     }
-
+    
     showNotice() {
         const notice = document.createElement('div');
         notice.innerHTML = `
@@ -326,18 +336,25 @@ export class UI {
     }
 
     startCountdown() {
-        // This will clear any existing timer
+        // Clear any existing timer before starting a new one
         if (this.countdownTimer) {
             clearInterval(this.countdownTimer);
         }
 
-        this.timeLeft = 40;
+        this.timeLeft = 40; // Reset timer to 40 seconds
         this.updateCountdownDisplay();
+        
         this.countdownTimer = setInterval(() => {
             this.timeLeft--;
             this.updateCountdownDisplay();
+            
             if (this.timeLeft <= 0) {
-                this.handleTimeout();
+                if (this.gameState.currentTurn === 'player') {
+                    this.handleTimeout();
+                } else {
+                    // For enemy turn, just clear the timer as the AI logic handles the move
+                    clearInterval(this.countdownTimer);
+                }
             }
         }, 1000);
     }
@@ -348,25 +365,10 @@ export class UI {
         if (this.gameState.currentTurn === 'player') {
             let processed = false;
 
-            // Check if we should transition from ban to pick phase
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-                if (this.gameState.currentTurn === 'enemy') {
-                    this.processAITurn();
-                    return;
-                }
-            }
-
+            // Process timeout actions
             if (this.gameState.phase === 'ban') {
-                // For banning phase, add a null/blank ban
                 processed = this.draftLogic.processPlayerSelection(null);
             } else {
-                // For picking phase, auto-select a random hero
                 const availableHeroes = this.draftLogic.heroes.filter(hero =>
                     this.gameState.isHeroAvailable(hero.id)
                 );
@@ -390,7 +392,11 @@ export class UI {
 
     updateCountdownDisplay() {
         const countdownElement = document.getElementById('countdown');
-        countdownElement.textContent = `Time left: ${this.timeLeft}s`;
+        const turnText = this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy';
+        countdownElement.textContent = `${turnText} turn: ${this.timeLeft}s`;
+        
+        // Add visual feedback
+        countdownElement.className = this.gameState.currentTurn === 'player' ? 'player-turn' : 'enemy-turn';
     }
 
     handleHeroClick(event) {
@@ -404,9 +410,9 @@ export class UI {
             this.gameState.playerBans.length >= this.maxBansPerTeam &&
             this.gameState.enemyBans.length >= this.maxBansPerTeam) {
             this.gameState.phase = 'pick';
-            // Set the correct starting turn for pick phase based on sides
             this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
             this.updatePhaseIndicator();
+            this.scrollToDraftBoard();
             if (this.gameState.currentTurn === 'enemy') {
                 this.processAITurn();
                 return;
@@ -420,20 +426,11 @@ export class UI {
                 clearInterval(this.countdownTimer);
             }
 
-            // Check if we should transition to pick phase after this ban
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                // Set the correct starting turn for pick phase based on sides
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-            }
-
             // Update display immediately to show player's selection
             this.updateTeamDisplays();
             this.updatePhaseIndicator();
             this.renderHeroPool();
+            this.scrollToDraftBoard();
 
             // Check if game has ended after player's move
             if (!this.checkGameEnd()) {
@@ -557,7 +554,7 @@ export class UI {
         this.phaseIndicator.textContent = phase;
     }
 
-    async displayDraftResults(evaluation) {
+    displayDraftResults(evaluation) {
         const existingResults = document.querySelector('.modal');
         if (existingResults) {
             existingResults.remove();
@@ -728,19 +725,6 @@ export class UI {
             </div>
         </div>
         `;
-
-        // Add a save score button to the results div
-        const saveScoreButton = document.createElement('button');
-        saveScoreButton.textContent = 'Save Score';
-        saveScoreButton.className = 'save-score-button';
-        saveScoreButton.onclick = () => {
-            if (this.authModal) {
-                this.authModal.show(advantagePercentage);
-            } else {
-                alert('Authentication system is not available. Please try again later.');
-            }
-        };
-        resultsDiv.appendChild(saveScoreButton);
 
         const modal = document.createElement('div');
         modal.className = 'modal';
