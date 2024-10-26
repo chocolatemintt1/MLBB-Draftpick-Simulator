@@ -12,21 +12,20 @@ export class UI {
         this.hideHeroPool();
         this.addFloatingRefreshButton();
         this.updateTeamCompositionDisplay();
-        this.showNotice();
         this.countdownTimer = null;
         this.timeLeft = 40; // Default time
         this.aiThinkingTime = { min: 3000, max: 8000 };
         this.maxBansPerTeam = 5; // Add this to track max bans
 
         this.teamLogos = {
-            blacklist: '../assets/teams/blacklist.png',
-            echo: '../assets/teams/tlph.png',
-            onic: '../assets/teams/fnop.png',
-            ap: '../assets/teams/apbren.png',
-            tnc: '../assets/teams/tnc.png',
-            aurora: '../assets/teams/aurora.png',
-            rsg: '../assets/teams/rsg.png',
-            omg: '../assets/teams/omg.png',
+            blacklist: 'assets/teams/blacklist.png',
+            echo: 'assets/teams/tlph.png',
+            onic: 'assets/teams/fnop.png',
+            ap: 'assets/teams/apbren.png',
+            tnc: 'assets/teams/tnc.png',
+            aurora: 'assets/teams/aurora.png',
+            rsg: 'assets/teams/rsg.png',
+            omg: 'assets/teams/omg.png',
         };
     }
 
@@ -284,7 +283,7 @@ export class UI {
             this.roleFilters.appendChild(button);
         });
     }
-    
+    /*
     showNotice() {
         const notice = document.createElement('div');
         notice.innerHTML = `
@@ -301,7 +300,7 @@ export class UI {
         `;
         document.body.appendChild(notice);
     }
-
+    */
     async startDraft() {
         this.gameState.selectedEnemy = this.teamSelect.value;
         if (this.gameState.selectedEnemy === 'player') {
@@ -606,7 +605,7 @@ export class UI {
             <div class="team-stats-comparison">
                 <div class="stats-column">
                     <div class="team-logo-section">
-                        <img src="../assets/teams/mpl.png" alt="Your Team" class="team-logo">
+                        <img src="assets/teams/mpl.png" alt="Your Team" class="team-logo">
                         <h3>Your Team</h3>
                     </div>
                     <ul>
