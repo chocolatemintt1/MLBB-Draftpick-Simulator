@@ -153,3 +153,57 @@ body {
         align-items: flex-start;
     }
 }
+
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(178, 148, 148, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+/* Optional: Add animation for the loading spinner */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 10px auto;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.home-icon {
+    display: block;
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.home-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.home-icon:hover svg {
+    transform: scale(1.1);
+}
