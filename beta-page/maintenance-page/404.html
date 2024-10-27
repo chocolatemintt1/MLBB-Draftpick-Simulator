@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found</title>
+  <style>
+    :root {
+      --primary-color: #ffd700;
+      --secondary-color: #2a2a2a;
+      --background-color: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --border-radius: 0.75rem;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: clamp(1rem, 5vw, 2rem);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(145deg, var(--background-color) 0%, var(--secondary-color) 100%);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      padding: clamp(2rem, 6vw, 3rem);
+      background: rgba(42, 42, 42, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 215, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                  0 0 0 1px rgba(255, 215, 0, 0.05);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      margin-bottom: 2rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      transition: var(--transition);
+    }
+
+    img:hover {
+      transform: translateY(-5px);
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    }
+
+    h1 {
+      font-size: clamp(3rem, 15vw, 5rem);
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.025em;
+    }
+
+    p {
+      font-size: clamp(1rem, 4vw, 1.125rem);
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    a {
+      display: inline-block;
+      text-decoration: none;
+      color: var(--secondary-color);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 1rem 2rem;
+      background-color: var(--primary-color);
+      border-radius: var(--border-radius);
+      margin-top: 2rem;
+      transition: var(--transition);
+      letter-spacing: 0.5px;
+      border: 2px solid var(--primary-color);
+    }
+
+    a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+      background-color: transparent;
+      color: var(--primary-color);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      img {
+        max-width: 180px;
+      }
+
+      a {
+        padding: 0.875rem 1.75rem;
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 800px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="layla-cry.png" alt="404 illustration">
+    <h1>404</h1>
+    <p>Oops! The page you're looking for doesn't exist.</p>
+    <p>We're not done yet with the coding so kindly wait okay..</p>
+    <p class="highlight">Good dog!</p>
+    <a href="/beta-page/index.html">Go Back to Home</a>
+  </div>
+</body>
+</html>
