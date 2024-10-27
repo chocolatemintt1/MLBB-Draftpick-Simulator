@@ -1,6 +1,7 @@
 import { getAuth, signInWithusernameAndPassword } from 'firebase/auth';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD7y2XwoDAydL4hMNH7NQnWNly87p29Sak",
@@ -16,6 +17,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const database = getDatabase(app);
+
+export { database };
 
 export class FirebaseAuthModal {
     constructor() {

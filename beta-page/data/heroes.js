@@ -175,8 +175,6 @@ const originalHeroes = [
 
     /*easter eggs*/
     { id: "kanade", name: "Kanade", role: "Fighter", damage: 10, durability: 10, cc: 10, image: "../assets/kanade.webp" },
-    { id: "shinazugawa", name: "Sanemi", role: "Fighter", damage: 1, durability: 1, cc: 1, image: "../assets/shinazugawa.png" },
-    { id: "obanai", name: "Obanai", role: "Fighter", damage: 1, durability: 1, cc: 1, image: "../assets/obanai.jpg" },
     { id: "carlo", name: "GOD", role: "Fighter", damage: 99, durability: 99, cc: 99, image: "https://chocolatemintt1.github.io/carloamparo22/pfp_img.jpg" }
 ];
 
