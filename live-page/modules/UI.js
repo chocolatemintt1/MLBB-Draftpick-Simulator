@@ -18,14 +18,14 @@ export class UI {
         this.maxBansPerTeam = 5; // Add this to track max bans
 
         this.teamLogos = {
-            blacklist: 'assets/teams/blacklist.png',
-            echo: 'assets/teams/tlph.png',
-            onic: 'assets/teams/fnop.png',
-            ap: 'assets/teams/apbren.png',
-            tnc: 'assets/teams/tnc.png',
-            aurora: 'assets/teams/aurora.png',
-            rsg: 'assets/teams/rsg.png',
-            omg: 'assets/teams/omg.png',
+            blacklist: '../assets/teams/blacklist.png',
+            echo: '../assets/teams/tlph.png',
+            onic: '../assets/teams/fnop.png',
+            ap: '../assets/teams/apbren.png',
+            tnc: '../assets/teams/tnc.png',
+            aurora: '../assets/teams/aurora.png',
+            rsg: '../assets/teams/rsg.png',
+            omg: '../assets/teams/omg.png',
         };
     }
 
@@ -605,7 +605,7 @@ export class UI {
             <div class="team-stats-comparison">
                 <div class="stats-column">
                     <div class="team-logo-section">
-                        <img src="assets/teams/mpl.png" alt="Your Team" class="team-logo">
+                        <img src="../assets/teams/mpl.png" alt="Your Team" class="team-logo">
                         <h3>Your Team</h3>
                     </div>
                     <ul>

@@ -1,5 +1,5 @@
-import { heroes, roleOrder } from './data/heroes.js';
-import { teamStrategies } from './data/teamStrategies.js';
+import { heroes, roleOrder } from '../data/heroes.js';
+import { teamStrategies } from '../data/teamStrategies.js';
 import { GameState } from './modules/GameState.js';
 import { DraftLogic } from './modules/DraftLogic.js';
 import { UI } from './modules/UI.js';
