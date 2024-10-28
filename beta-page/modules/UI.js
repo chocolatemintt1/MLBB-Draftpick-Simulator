@@ -3,20 +3,26 @@ export class UI {
         this.gameState = gameState;
         this.draftLogic = draftLogic;
         this.teamStrategies = teamStrategies;
-        this.roleOrder = ['ALL', ...roleOrder]; // Add ALL to the beginning of roleOrder
+        this.roleOrder = ['ALL', ...roleOrder];
         this.teamAnalysis = teamAnalysis;
-        this.currentFilter = 'ALL'; // Set ALL as default filter
-        this.playerSide = 'blue'; // Default to blue side
-        this.initializeElements();
-        this.setupEventListeners();
-        this.hideHeroPool();
-        this.addFloatingRefreshButton();
-        this.updateTeamCompositionDisplay();
-        this.showNotice();
+        this.currentFilter = 'ALL';
+        this.playerSide = 'blue';
         this.countdownTimer = null;
-        this.timeLeft = 40; // Default time
+        this.timeLeft = 40;
         this.aiThinkingTime = { min: 3000, max: 8000 };
-        this.maxBansPerTeam = 5; // Add this to track max bans
+        this.maxBansPerTeam = 5;
+        this.notificationTimeout = null;
+
+        // Define static properties
+        this.roleColors = {
+            'ALL': 'rgba(128, 128, 128, 0.2)',
+            'Tank': 'rgba(255, 165, 0, 0.2)',
+            'Mage': 'rgba(0, 127, 255, 0.2)',
+            'Assassin': 'rgba(128, 0, 128, 0.2)',
+            'Marksman': 'rgba(255, 215, 0, 0.2)',
+            'Support': 'rgba(0, 128, 0, 0.2)',
+            'Fighter': 'rgba(255, 0, 0, 0.2)'
+        };
 
         this.teamLogos = {
             blacklist: '../assets/teams/blacklist.png',
@@ -26,21 +32,63 @@ export class UI {
             tnc: '../assets/teams/tnc.png',
             aurora: '../assets/teams/aurora.png',
             rsg: '../assets/teams/rsg.png',
-            omg: '../assets/teams/omg.png',
+            omg: '../assets/teams/omg.png'
         };
+
+        this.initializeElements();
+        this.setupEventListeners();
+        this.hideHeroPool();
+        this.addFloatingRefreshButton();
+        this.updateTeamCompositionDisplay();
+        this.showNotice();
     }
 
+    // DOM Element Getters
+    get heroPool() { return document.getElementById('heroPool'); }
+    get teamSelect() { return document.getElementById('teamSelect'); }
+    get startButton() { return document.getElementById('startGame'); }
+    get phaseIndicator() { return document.querySelector('.phase-indicator'); }
+    get enemyTeamName() { return document.getElementById('enemyTeamName'); }
+    get roleFilters() { return document.getElementById('roleFilters'); }
+
     getRoleColor(role) {
-        const colors = {
-            'ALL': 'rgba(128, 128, 128, 0.2)',  // Gray with transparency for ALL
-            'Tank': 'rgba(255, 165, 0, 0.2)',     // Orange with transparency
-            'Mage': 'rgba(0, 127, 255, 0.2)',     // Blue with transparency
-            'Assassin': 'rgba(128, 0, 128, 0.2)', // Purple with transparency
-            'Marksman': 'rgba(255, 215, 0, 0.2)', // Yellow with transparency
-            'Support': 'rgba(0, 128, 0, 0.2)',    // Green with transparency
-            'Fighter': 'rgba(255, 0, 0, 0.2)'     // Red with transparency
-        };
-        return colors[role] || 'transparent';
+        return this.roleColors[role] || 'transparent';
+    }
+
+    showTurnNotification() {
+        // Clear any existing notification
+        if (this.notificationTimeout) {
+            clearTimeout(this.notificationTimeout);
+            const existingNotification = document.querySelector('.turn-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'turn-notification';
+        
+        const phase = this.gameState.phase === 'ban' ? 'BAN' : 'PICK';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-text">YOUR TURN TO ${phase}!</div>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Add CSS animation class after a brief delay
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+
+        // Remove the notification after 3 seconds
+        this.notificationTimeout = setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 500); // Wait for fade out animation
+        }, 3000);
     }
 
     updateTeamCompositionDisplay() {
@@ -69,64 +117,36 @@ export class UI {
     }
 
     async processAITurn() {
-        if (this.gameState.currentTurn === 'enemy') {
-            // Clear any existing timer when AI turn starts
-            if (this.countdownTimer) {
-                clearInterval(this.countdownTimer);
-            }
+        if (this.gameState.currentTurn !== 'enemy') return;
 
-            // Check for ban to pick phase transition
-            if (this.gameState.phase === 'ban' &&
-                this.gameState.playerBans.length >= this.maxBansPerTeam &&
-                this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-                this.gameState.phase = 'pick';
-                this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-                this.updatePhaseIndicator();
-                this.scrollToDraftBoard();
-                if (this.gameState.currentTurn === 'player') {
-                    this.startCountdown();
-                    return;
-                }
-            }
+        this.clearCountdown();
 
-            // Start enemy countdown
-            this.startCountdown();
-
-            // Add a small delay before showing AI thinking
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            this.showAIThinking();
-            
-            // Calculate a random thinking time between min and max
-            const thinkingTime = Math.floor(
-                Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + this.aiThinkingTime.min
-            );
-            
-            // Wait for AI thinking animation
-            await new Promise(resolve => setTimeout(resolve, thinkingTime));
-            
-            this.hideAIThinking();
-
-            // Clear the countdown timer
-            if (this.countdownTimer) {
-                clearInterval(this.countdownTimer);
-            }
-
-            // Process the AI's selection
-            const selectedId = this.draftLogic.processAITurn();
-
-            // Reset filter to ALL after enemy's turn if in ban phase
-            if (this.gameState.phase === 'ban') {
-                this.currentFilter = 'ALL';
-            }
-
-            this.updateDisplay();
-            this.scrollToDraftBoard();
-
-            if (!this.checkGameEnd()) {
-                // Start countdown for next turn
+        if (this.shouldTransitionToPick()) {
+            this.transitionToPick();
+            if (this.gameState.currentTurn === 'player') {
+                this.showTurnNotification(); // Add notification when transitioning to player's turn
                 this.startCountdown();
+                return;
             }
+        }
+
+        this.startCountdown();
+        await this.simulateAIThinking();
+
+        const selectedId = this.draftLogic.processAITurn();
+
+        if (this.gameState.phase === 'ban') {
+            this.currentFilter = 'ALL';
+        }
+
+        this.updateDisplay();
+        this.scrollToDraftBoard();
+
+        if (!this.checkGameEnd()) {
+            if (this.gameState.currentTurn === 'player') {
+                this.showTurnNotification(); // Add notification after AI's turn
+            }
+            this.startCountdown();
         }
     }
 
@@ -153,17 +173,21 @@ export class UI {
     }
 
     hideAIThinking() {
-        const thinkingElement = document.getElementById('ai-thinking');
-        if (thinkingElement) {
-            thinkingElement.remove();
-        }
+        const element = document.getElementById('ai-thinking');
+        if (element) element.remove();
     }
 
-    simulateAIThinking() {
+    async simulateAIThinking() {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.showAIThinking();
+
         const thinkingTime = Math.floor(
-            Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) + this.aiThinkingTime.min
+            Math.random() * (this.aiThinkingTime.max - this.aiThinkingTime.min + 1) +
+            this.aiThinkingTime.min
         );
-        return new Promise(resolve => setTimeout(resolve, thinkingTime));
+
+        await new Promise(resolve => setTimeout(resolve, thinkingTime));
+        this.hideAIThinking();
     }
 
     hideHeroPool() {
@@ -177,15 +201,6 @@ export class UI {
     }
 
     initializeElements() {
-        this.heroPool = document.getElementById('heroPool');
-        this.teamSelect = document.getElementById('teamSelect');
-        this.startButton = document.getElementById('startGame');
-        this.phaseIndicator = document.querySelector('.phase-indicator');
-        this.enemyTeamName = document.getElementById('enemyTeamName');
-        this.roleFilters = document.getElementById('roleFilters');
-        this.heroPool = document.getElementById('heroPool');
-
-        // Add side selection
         this.createSideSelection();
     }
 
@@ -197,33 +212,34 @@ export class UI {
         sideSelect.id = 'sideSelect';
         sideSelect.className = 'side-select';
 
-        const blueOption = document.createElement('option');
-        blueOption.value = 'blue';
-        blueOption.textContent = 'Team First Pick';
+        const options = [
+            { value: 'blue', text: 'Team First Pick' },
+            { value: 'red', text: 'Enemy First Pick' }
+        ];
 
-        const redOption = document.createElement('option');
-        redOption.value = 'red';
-        redOption.textContent = 'Enemy First Pick';
-
-        sideSelect.appendChild(blueOption);
-        sideSelect.appendChild(redOption);
+        sideSelect.innerHTML = options.map(opt =>
+            `<option value="${opt.value}">${opt.text}</option>`
+        ).join('');
 
         sideSelectContainer.appendChild(sideSelect);
-
-        // Insert the side selection before the start button
         this.startButton.parentNode.insertBefore(sideSelectContainer, this.startButton);
 
-        // Add event listener for side selection
         sideSelect.addEventListener('change', (e) => {
             this.playerSide = e.target.value;
-            this.updateTeamDisplays(); // Update the display when side changes
+            this.updateTeamDisplays();
         });
     }
 
     setupEventListeners() {
-        this.startButton.addEventListener('click', () => this.startDraft());
-        this.heroPool.addEventListener('click', (e) => this.handleHeroClick(e));
-        this.roleFilters.addEventListener('click', (e) => this.handleRoleFilter(e));
+        const events = [
+            [this.startButton, 'click', () => this.startDraft()],
+            [this.heroPool, 'click', (e) => this.handleHeroClick(e)],
+            [this.roleFilters, 'click', (e) => this.handleRoleFilter(e)]
+        ];
+
+        events.forEach(([element, event, handler]) => {
+            element.addEventListener(event, handler);
+        });
     }
 
     addFloatingRefreshButton() {
@@ -231,7 +247,7 @@ export class UI {
         refreshButton.id = 'floatingRefreshButton';
         refreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>';
         refreshButton.title = "Refresh Game";
-        refreshButton.addEventListener('click', () => this.refreshGame());
+        refreshButton.addEventListener('click', () => location.reload());
         document.body.appendChild(refreshButton);
     }
 
@@ -284,7 +300,7 @@ export class UI {
             this.roleFilters.appendChild(button);
         });
     }
-    
+
     showNotice() {
         const notice = document.createElement('div');
         notice.innerHTML = `
@@ -333,59 +349,67 @@ export class UI {
         } else {
             this.startCountdown();
         }
+        if (this.gameState.currentTurn === 'player') {
+            this.showTurnNotification();
+            this.startCountdown();
+        } else {
+            await this.processAITurn();
+        }
+    }
+
+    clearCountdown() {
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
     }
 
     startCountdown() {
-        // Clear any existing timer before starting a new one
-        if (this.countdownTimer) {
-            clearInterval(this.countdownTimer);
-        }
-
-        this.timeLeft = 40; // Reset timer to 40 seconds
+        this.clearCountdown();
+        this.timeLeft = 40;
         this.updateCountdownDisplay();
-        
+
         this.countdownTimer = setInterval(() => {
             this.timeLeft--;
             this.updateCountdownDisplay();
-            
+
             if (this.timeLeft <= 0) {
                 if (this.gameState.currentTurn === 'player') {
                     this.handleTimeout();
                 } else {
-                    // For enemy turn, just clear the timer as the AI logic handles the move
-                    clearInterval(this.countdownTimer);
+                    this.clearCountdown();
                 }
             }
         }, 1000);
     }
 
     handleTimeout() {
-        clearInterval(this.countdownTimer);
+        this.clearCountdown();
 
-        if (this.gameState.currentTurn === 'player') {
-            let processed = false;
+        if (this.gameState.currentTurn !== 'player') return;
 
-            // Process timeout actions
-            if (this.gameState.phase === 'ban') {
-                processed = this.draftLogic.processPlayerSelection(null);
-            } else {
-                const availableHeroes = this.draftLogic.heroes.filter(hero =>
-                    this.gameState.isHeroAvailable(hero.id)
-                );
-                if (availableHeroes.length > 0) {
-                    const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
-                    processed = this.draftLogic.processPlayerSelection(randomHero.id);
-                }
+        let processed = false;
+
+        if (this.gameState.phase === 'ban') {
+            processed = this.draftLogic.processPlayerSelection(null);
+        } else {
+            const availableHeroes = this.draftLogic.heroes.filter(hero =>
+                this.gameState.isHeroAvailable(hero.id)
+            );
+
+            if (availableHeroes.length > 0) {
+                const randomHero = availableHeroes[Math.floor(Math.random() * availableHeroes.length)];
+                processed = this.draftLogic.processPlayerSelection(randomHero.id);
             }
+        }
 
-            if (processed) {
-                this.updateTeamDisplays();
-                this.updatePhaseIndicator();
-                this.renderHeroPool();
+        if (processed) {
+            this.updateTeamDisplays();
+            this.updatePhaseIndicator();
+            this.renderHeroPool();
 
-                if (!this.checkGameEnd()) {
-                    this.processAITurn();
-                }
+            if (!this.checkGameEnd()) {
+                this.processAITurn();
             }
         }
     }
@@ -394,9 +418,20 @@ export class UI {
         const countdownElement = document.getElementById('countdown');
         const turnText = this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy';
         countdownElement.textContent = `${turnText} turn: ${this.timeLeft}s`;
-        
-        // Add visual feedback
-        countdownElement.className = this.gameState.currentTurn === 'player' ? 'player-turn' : 'enemy-turn';
+        countdownElement.className = `${this.gameState.currentTurn}-turn`;
+    }
+
+    shouldTransitionToPick() {
+        return this.gameState.phase === 'ban' &&
+            this.gameState.playerBans.length >= this.maxBansPerTeam &&
+            this.gameState.enemyBans.length >= this.maxBansPerTeam;
+    }
+
+    transitionToPick() {
+        this.gameState.phase = 'pick';
+        this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
+        this.updatePhaseIndicator();
+        this.scrollToDraftBoard();
     }
 
     handleHeroClick(event) {
@@ -405,36 +440,20 @@ export class UI {
 
         const heroId = heroElement.dataset.heroId;
 
-        // Check if we should transition from ban to pick phase
-        if (this.gameState.phase === 'ban' &&
-            this.gameState.playerBans.length >= this.maxBansPerTeam &&
-            this.gameState.enemyBans.length >= this.maxBansPerTeam) {
-            this.gameState.phase = 'pick';
-            this.gameState.currentTurn = this.playerSide === 'blue' ? 'player' : 'enemy';
-            this.updatePhaseIndicator();
-            this.scrollToDraftBoard();
+        if (this.shouldTransitionToPick()) {
+            this.transitionToPick();
             if (this.gameState.currentTurn === 'enemy') {
                 this.processAITurn();
                 return;
             }
         }
 
-        // Process player selection and update display immediately
         if (this.draftLogic.processPlayerSelection(heroId)) {
-            // Clear existing countdown
-            if (this.countdownTimer) {
-                clearInterval(this.countdownTimer);
-            }
-
-            // Update display immediately to show player's selection
-            this.updateTeamDisplays();
-            this.updatePhaseIndicator();
-            this.renderHeroPool();
+            this.clearCountdown();
+            this.updateDisplay();
             this.scrollToDraftBoard();
 
-            // Check if game has ended after player's move
             if (!this.checkGameEnd()) {
-                // If game hasn't ended, process AI's turn
                 this.processAITurn();
             }
         }
