@@ -75,9 +75,8 @@ function showHeroDetails(hero) {
 
 function populateGallery(filteredHeroes = heroesData) {
     const container = document.querySelector('.container');
-    container.innerHTML = ''; // Clear existing content
+    container.innerHTML = '';
 
-    // Group heroes by role
     const heroesByRole = filteredHeroes.reduce((acc, hero) => {
         if (!acc[hero.role]) {
             acc[hero.role] = [];
@@ -86,22 +85,34 @@ function populateGallery(filteredHeroes = heroesData) {
         return acc;
     }, {});
 
-    // Create category for each role
     for (const [role, heroes] of Object.entries(heroesByRole)) {
         const category = document.createElement('div');
         category.className = 'category';
-        category.innerHTML = `
-            <h2 class="category-title">${role}</h2>
-            <div class="heroes-row">
-                ${heroes.map(hero => `
-                    <div class="hero-card">
-                        <img src="${hero.image}" alt="${hero.name}" class="hero-image">
-                        <div class="hero-name">${hero.name}</div>
-                    </div>
-                `).join('')}
+        
+        const heroesRowContainer = document.createElement('div');
+        heroesRowContainer.className = 'heroes-row-container';
+
+        const heroesRow = document.createElement('div');
+        heroesRow.className = 'heroes-row';
+
+        heroesRow.innerHTML = heroes.map(hero => `
+            <div class="hero-card">
+                <img src="${hero.image}" alt="${hero.name}" class="hero-image">
+                <div class="hero-name">${hero.name}</div>
             </div>
-        `;
+        `).join('');
+
+        const { prevButton, nextButton } = createNavigationButtons(heroesRow);
+        
+        category.innerHTML = `<h2 class="category-title">${role}</h2>`;
+        heroesRowContainer.appendChild(prevButton);
+        heroesRowContainer.appendChild(heroesRow);
+        heroesRowContainer.appendChild(nextButton);
+        category.appendChild(heroesRowContainer);
+        
         container.appendChild(category);
+
+        handleNavigation(heroesRow, prevButton, nextButton);
 
         // Add click events to hero cards
         const heroCards = category.querySelectorAll('.hero-card');
@@ -121,6 +132,42 @@ function setupSearch() {
             hero.name.toLowerCase().includes(searchTerm)
         );
         populateGallery(filteredHeroes);
+    });
+}
+
+function createNavigationButtons(heroesRow) {
+    const prevButton = document.createElement('button');
+    const nextButton = document.createElement('button');
+    
+    prevButton.className = 'nav-button prev';
+    nextButton.className = 'nav-button next';
+    
+    prevButton.innerHTML = '❮';
+    nextButton.innerHTML = '❯';
+    
+    // Initially hide prev button
+    prevButton.style.display = 'none';
+
+    return { prevButton, nextButton };
+}
+
+function handleNavigation(heroesRow, prevButton, nextButton) {
+    const scrollAmount = heroesRow.offsetWidth * 0.8; // 80% of visible width
+    
+    nextButton.addEventListener('click', () => {
+        heroesRow.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+    
+    prevButton.addEventListener('click', () => {
+        heroesRow.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    // Show/hide navigation buttons based on scroll position
+    heroesRow.addEventListener('scroll', () => {
+        prevButton.style.display = heroesRow.scrollLeft > 0 ? 'block' : 'none';
+        nextButton.style.display = 
+            heroesRow.scrollLeft + heroesRow.offsetWidth < heroesRow.scrollWidth - 10 
+            ? 'block' : 'none';
     });
 }
 
