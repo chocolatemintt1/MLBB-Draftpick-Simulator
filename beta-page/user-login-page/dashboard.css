@@ -143,3 +143,24 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--hover-color);
 }
+
+.admin-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-button svg {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+.admin-button:hover {
+    background-color: rgba(255, 215, 0, 0.8); /* Slightly darker on hover */
+}

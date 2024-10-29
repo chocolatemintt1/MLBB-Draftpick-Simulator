@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body>
     <div class="dashboard-container">
         <header class="dashboard-header">
@@ -18,8 +20,15 @@
         <div class="dashboard-content">
             <!-- Add your dashboard content here -->
             <div id="admin-panel" style="display: none;">
-                <!-- Admin-only content goes here -->
                 <h2>Admin Panel</h2>
+                <button id="backup-btn" class="admin-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="var(--primary-color)"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M12 0C5.373 0 0 5.373 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0zm0 22c-5.528 0-10-4.472-10-10S6.472 2 12 2s10 4.472 10 10-4.472 10-10 10zm-1-15h2v7h-2zm0 8h2v2h-2z" />
+                    </svg>
+                    Backup All Files
+                </button>
                 <!-- Add admin features -->
             </div>
         </div>
@@ -35,7 +44,7 @@
         const username = sessionStorage.getItem('username');
         const alias = sessionStorage.getItem('alias');
         const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-        
+
         document.getElementById('username-display').textContent = username.replace('@', '');
         document.getElementById('alias-display').textContent = alias;
 
@@ -53,6 +62,11 @@
             // Redirect to login page
             window.location.href = '../user-login-page/login.html';
         });
+
+        document.getElementById('backup-btn').addEventListener('click', () => {
+            alert('Backup functionality is not yet implemented.'); // Placeholder for actual backup logic
+        });
     </script>
 </body>
+
 </html>
