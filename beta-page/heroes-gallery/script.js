@@ -1,5 +1,8 @@
 import heroesData from '../heroes-gallery/data/heroesData.js';
 
+let startX; // Variable to store the starting X position of the touch or mouse
+let isDragging = false; // Flag to check if the user is currently dragging
+
 function createModal() {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -73,6 +76,35 @@ function showHeroDetails(hero) {
     };
 }
 
+function handleStart(e) {
+    startX = e.touches ? e.touches[0].clientX : e.clientX; // Get the initial touch or mouse position
+    isDragging = true; // Set dragging to true
+}
+
+function handleMove(e) {
+    if (!isDragging) return; // If not dragging, exit
+
+    const currentX = e.touches ? e.touches[0].clientX : e.clientX; // Get current position
+    const diffX = startX - currentX; // Calculate the difference
+
+    // If the difference is significant enough, we consider it a swipe
+    if (Math.abs(diffX) > 50) {
+        const heroesRow = e.currentTarget;
+        if (diffX > 0) {
+            // Swiped left
+            heroesRow.scrollBy({ left: heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
+        } else {
+            // Swiped right
+            heroesRow.scrollBy({ left: -heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
+        }
+        isDragging = false; // Reset dragging
+    }
+}
+
+function handleEnd() {
+    isDragging = false; // Reset dragging on touch or mouse end
+}
+
 function populateGallery(filteredHeroes = heroesData) {
     const container = document.querySelector('.container');
     container.innerHTML = '';
@@ -93,6 +125,7 @@ function populateGallery(filteredHeroes = heroesData) {
         heroesRowContainer.className = 'heroes-row-container';
 
         const heroesRow = document.createElement('div');
+ //```javascript
         heroesRow.className = 'heroes-row';
 
         heroesRow.innerHTML = heroes.map(hero => `
@@ -102,17 +135,19 @@ function populateGallery(filteredHeroes = heroesData) {
             </div>
         `).join('');
 
-        const { prevButton, nextButton } = createNavigationButtons(heroesRow);
-        
         category.innerHTML = `<h2 class="category-title">${role}</h2>`;
-        heroesRowContainer.appendChild(prevButton);
         heroesRowContainer.appendChild(heroesRow);
-        heroesRowContainer.appendChild(nextButton);
         category.appendChild(heroesRowContainer);
-        
         container.appendChild(category);
 
-        handleNavigation(heroesRow, prevButton, nextButton);
+        // Add touch and mouse event listeners for swipe functionality
+        heroesRow.addEventListener('touchstart', handleStart);
+        heroesRow.addEventListener('touchmove', handleMove);
+        heroesRow.addEventListener('touchend', handleEnd);
+        heroesRow.addEventListener('mousedown', handleStart);
+        heroesRow.addEventListener('mousemove', handleMove);
+        heroesRow.addEventListener('mouseup', handleEnd);
+        heroesRow.addEventListener('mouseleave', handleEnd); // Handle mouse leaving the area
 
         // Add click events to hero cards
         const heroCards = category.querySelectorAll('.hero-card');
@@ -132,42 +167,6 @@ function setupSearch() {
             hero.name.toLowerCase().includes(searchTerm)
         );
         populateGallery(filteredHeroes);
-    });
-}
-
-function createNavigationButtons(heroesRow) {
-    const prevButton = document.createElement('button');
-    const nextButton = document.createElement('button');
-    
-    prevButton.className = 'nav-button prev';
-    nextButton.className = 'nav-button next';
-    
-    prevButton.innerHTML = '❮';
-    nextButton.innerHTML = '❯';
-    
-    // Initially hide prev button
-    prevButton.style.display = 'none';
-
-    return { prevButton, nextButton };
-}
-
-function handleNavigation(heroesRow, prevButton, nextButton) {
-    const scrollAmount = heroesRow.offsetWidth * 0.8; // 80% of visible width
-    
-    nextButton.addEventListener('click', () => {
-        heroesRow.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-    
-    prevButton.addEventListener('click', () => {
-        heroesRow.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    // Show/hide navigation buttons based on scroll position
-    heroesRow.addEventListener('scroll', () => {
-        prevButton.style.display = heroesRow.scrollLeft > 0 ? 'block' : 'none';
-        nextButton.style.display = 
-            heroesRow.scrollLeft + heroesRow.offsetWidth < heroesRow.scrollWidth - 10 
-            ? 'block' : 'none';
     });
 }
 
