@@ -1,7 +1,9 @@
+// Import hero data
 import heroesData from '../heroes-gallery/data/heroesData.js';
 
-let startX; // Variable to store the starting X position of the touch or mouse
-let isDragging = false; // Flag to check if the user is currently dragging
+// Touch/mouse tracking variables
+let startX;
+let isDragging = false;
 
 function createModal() {
     const modal = document.createElement('div');
@@ -24,30 +26,6 @@ function showHeroDetails(hero) {
         <h2>${hero.name}</h2>
         <img src="${hero.image}" alt="${hero.name}">
         
-        <div class="skills-section">
-            <h3 class="section-title">Skills</h3>
-            <div class="skills-grid">
-                ${hero.skills.map(skill => `
-                    <div class="skill-item">
-                        <img src="${skill.image}" alt="${skill.name}">
-                        <p>${skill.name}</p>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-        
-        <div class="items-section">
-            <h3 class="section-title">Best Items</h3>
-            <div class="items-grid">
-                ${hero.bestItems.map(item => `
-                    <div class="item-card">
-                        <img src="${item.image}" alt="${item.name}">
-                        <p>${item.name}</p>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-        
         <div class="counters-section">
             <h3 class="section-title">Counters</h3>
             <div class="counters-grid">
@@ -68,7 +46,6 @@ function showHeroDetails(hero) {
         modal.style.display = 'none';
     };
 
-    // Close modal when clicking outside
     window.onclick = (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
@@ -76,33 +53,61 @@ function showHeroDetails(hero) {
     };
 }
 
+function createNavigationButtons(heroesRow) {
+    const prevButton = document.createElement('button');
+    prevButton.className = 'nav-button prev hidden md:flex';
+    prevButton.innerHTML = '❮';
+    
+    const nextButton = document.createElement('button');
+    nextButton.className = 'nav-button next hidden md:flex';
+    nextButton.innerHTML = '❯';
+    
+    prevButton.addEventListener('click', () => {
+        heroesRow.scrollBy({ left: -heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
+    });
+    
+    nextButton.addEventListener('click', () => {
+        heroesRow.scrollBy({ left: heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
+    });
+    
+    // Show/hide buttons based on scroll position
+    heroesRow.addEventListener('scroll', () => {
+        prevButton.style.display = heroesRow.scrollLeft > 0 ? 'flex' : 'none';
+        nextButton.style.display = 
+            heroesRow.scrollLeft < (heroesRow.scrollWidth - heroesRow.clientWidth - 10) 
+            ? 'flex' : 'none';
+    });
+    
+    return { prevButton, nextButton };
+}
+
 function handleStart(e) {
-    startX = e.touches ? e.touches[0].clientX : e.clientX; // Get the initial touch or mouse position
-    isDragging = true; // Set dragging to true
+    startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    isDragging = true;
 }
 
 function handleMove(e) {
-    if (!isDragging) return; // If not dragging, exit
-
-    const currentX = e.touches ? e.touches[0].clientX : e.clientX; // Get current position
-    const diffX = startX - currentX; // Calculate the difference
-
-    // If the difference is significant enough, we consider it a swipe
+    if (!isDragging) return;
+    
+    e.preventDefault();
+    const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    const diffX = startX - currentX;
+    
     if (Math.abs(diffX) > 50) {
         const heroesRow = e.currentTarget;
         if (diffX > 0) {
-            // Swiped left
+            // Swipe left
             heroesRow.scrollBy({ left: heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
         } else {
-            // Swiped right
+            // Swipe right
             heroesRow.scrollBy({ left: -heroesRow.offsetWidth * 0.8, behavior: 'smooth' });
         }
-        isDragging = false; // Reset dragging
+        isDragging = false;
     }
 }
 
 function handleEnd() {
-    isDragging = false; // Reset dragging on touch or mouse end
+    isDragging = false;
 }
 
 function populateGallery(filteredHeroes = heroesData) {
@@ -122,12 +127,12 @@ function populateGallery(filteredHeroes = heroesData) {
         category.className = 'category';
         
         const heroesRowContainer = document.createElement('div');
-        heroesRowContainer.className = 'heroes-row-container';
+        heroesRowContainer.className = 'heroes-row-container relative';
 
         const heroesRow = document.createElement('div');
- //```javascript
         heroesRow.className = 'heroes-row';
 
+        // Create hero cards
         heroesRow.innerHTML = heroes.map(hero => `
             <div class="hero-card">
                 <img src="${hero.image}" alt="${hero.name}" class="hero-image">
@@ -135,19 +140,26 @@ function populateGallery(filteredHeroes = heroesData) {
             </div>
         `).join('');
 
-        category.innerHTML = `<h2 class="category-title">${role}</h2>`;
+        // Create and add navigation buttons
+        const { prevButton, nextButton } = createNavigationButtons(heroesRow);
+        heroesRowContainer.appendChild(prevButton);
         heroesRowContainer.appendChild(heroesRow);
+        heroesRowContainer.appendChild(nextButton);
+
+        category.innerHTML = `<h2 class="category-title">${role}</h2>`;
         category.appendChild(heroesRowContainer);
         container.appendChild(category);
 
-        // Add touch and mouse event listeners for swipe functionality
-        heroesRow.addEventListener('touchstart', handleStart);
-        heroesRow.addEventListener('touchmove', handleMove);
+        // Add touch events for mobile
+        heroesRow.addEventListener('touchstart', handleStart, { passive: false });
+        heroesRow.addEventListener('touchmove', handleMove, { passive: false });
         heroesRow.addEventListener('touchend', handleEnd);
+
+        // Add mouse events for desktop drag
         heroesRow.addEventListener('mousedown', handleStart);
         heroesRow.addEventListener('mousemove', handleMove);
         heroesRow.addEventListener('mouseup', handleEnd);
-        heroesRow.addEventListener('mouseleave', handleEnd); // Handle mouse leaving the area
+        heroesRow.addEventListener('mouseleave', handleEnd);
 
         // Add click events to hero cards
         const heroCards = category.querySelectorAll('.hero-card');

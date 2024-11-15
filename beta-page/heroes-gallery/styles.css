@@ -36,6 +36,10 @@ body {
     padding: 0.5rem 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .heroes-row::-webkit-scrollbar {
@@ -318,14 +322,22 @@ body {
     position: relative;
     width: 100%;
     padding: 0 40px;
+    overflow: hidden;
 }
 
 .heroes-row {
     display: flex;
-    overflow-x: hidden;
+    gap: 1rem;
+    padding: 0.5rem 0;
     scroll-behavior: smooth;
-    gap: 20px;
-    padding: 10px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+}
+
+.heroes-row::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
 }
 
 .nav-button {
@@ -373,4 +385,15 @@ body {
     margin: 0;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide navigation buttons on mobile */
+@media (max-width: 768px) {
+    .nav-button {
+        display: none;
+    }
+    
+    .heroes-row-container {
+        padding: 0; /* Remove padding on mobile since we don't have buttons */
+    }
 }

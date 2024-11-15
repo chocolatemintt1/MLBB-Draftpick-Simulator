@@ -1,39 +1,8 @@
 const heroesData = [
     {
         name: "Layla",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        image: "../heroes-gallery/data/hero-img/layla.webp",
         role: "Marksman",
-        skills: [
-            {
-                name: "Malefic Gun",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp",
-                description: "Increases attack range and damage"
-            },
-            {
-                name: "Light Wheel",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp",
-                description: "Fires a light wheel that slows enemies"
-            },
-            {
-                name: "Destruction Rush",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp",
-                description: "Fires a powerful energy beam"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Berserker's Fury",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp"
-            },
-            {
-                name: "Scarlet Phantom",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp"
-            },
-            {
-                name: "Endless Battle",
-                image: "../heroes-gallery/data/hero-img/tigreal.webp"
-            }
-        ],
         counters: [
             {
                 name: "Saber",
@@ -46,40 +15,9 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Miya",
+        image: "../heroes-gallery/data/hero-img/miya.webp",
         role: "Marksman",
-        skills: [
-            {
-                name: "Malefic Gun",
-                image: "https://example.com/layla-skill1.jpg",
-                description: "Increases attack range and damage"
-            },
-            {
-                name: "Light Wheel",
-                image: "https://example.com/layla-skill2.jpg",
-                description: "Fires a light wheel that slows enemies"
-            },
-            {
-                name: "Destruction Rush",
-                image: "https://example.com/layla-skill3.jpg",
-                description: "Fires a powerful energy beam"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Berserker's Fury",
-                image: "https://example.com/item1.jpg"
-            },
-            {
-                name: "Scarlet Phantom",
-                image: "https://example.com/item2.jpg"
-            },
-            {
-                name: "Endless Battle",
-                image: "https://example.com/item3.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Saber",
@@ -92,40 +30,9 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Bruno",
+        image: "../heroes-gallery/data/hero-img/bruno.webp",
         role: "Marksman",
-        skills: [
-            {
-                name: "Malefic Gun",
-                image: "https://example.com/layla-skill1.jpg",
-                description: "Increases attack range and damage"
-            },
-            {
-                name: "Light Wheel",
-                image: "https://example.com/layla-skill2.jpg",
-                description: "Fires a light wheel that slows enemies"
-            },
-            {
-                name: "Destruction Rush",
-                image: "https://example.com/layla-skill3.jpg",
-                description: "Fires a powerful energy beam"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Berserker's Fury",
-                image: "https://example.com/item1.jpg"
-            },
-            {
-                name: "Scarlet Phantom",
-                image: "https://example.com/item2.jpg"
-            },
-            {
-                name: "Endless Battle",
-                image: "https://example.com/item3.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Saber",
@@ -138,40 +45,121 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Clint",
+        image: "../heroes-gallery/data/hero-img/clint.webp",
         role: "Marksman",
-        skills: [
+        counters: [
             {
-                name: "Malefic Gun",
-                image: "https://example.com/layla-skill1.jpg",
-                description: "Increases attack range and damage"
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
             },
             {
-                name: "Light Wheel",
-                image: "https://example.com/layla-skill2.jpg",
-                description: "Fires a light wheel that slows enemies"
-            },
-            {
-                name: "Destruction Rush",
-                image: "https://example.com/layla-skill3.jpg",
-                description: "Fires a powerful energy beam"
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
             }
-        ],
-        bestItems: [
+        ]
+    }, {
+        name: "Moskov",
+        image: "../heroes-gallery/data/hero-img/moskov.webp",
+        role: "Marksman",
+        counters: [
             {
-                name: "Berserker's Fury",
-                image: "https://example.com/item1.jpg"
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
             },
             {
-                name: "Scarlet Phantom",
-                image: "https://example.com/item2.jpg"
-            },
-            {
-                name: "Endless Battle",
-                image: "https://example.com/item3.jpg"
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
             }
-        ],
+        ]
+    }, {
+        name: "Karrie",
+        image: "../heroes-gallery/data/hero-img/karrie.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Irithel",
+        image: "../heroes-gallery/data/hero-img/irithel.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Hanabi",
+        image: "../heroes-gallery/data/hero-img/hanabi.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Claude",
+        image: "../heroes-gallery/data/hero-img/claude.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Granger",
+        image: "../heroes-gallery/data/hero-img/granger.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Wanwan",
+        image: "../heroes-gallery/data/hero-img/wanwan.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    }, {
+        name: "Popol and Kupa",
+        image: "../heroes-gallery/data/hero-img/p&k.webp",
+        role: "Marksman",
         counters: [
             {
                 name: "Saber",
@@ -183,41 +171,117 @@ const heroesData = [
             }
         ]
     },
+    {
+        name: "Brody",
+        image: "../heroes-gallery/data/hero-img/brody.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Beatrix",
+        image: "../heroes-gallery/data/hero-img/beatrix.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Natan",
+        image: "../heroes-gallery/data/hero-img/natan.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Melissa",
+        image: "../heroes-gallery/data/hero-img/melissa.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Ixia",
+        image: "../heroes-gallery/data/hero-img/ixia.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Lesley",
+        image: "../heroes-gallery/data/hero-img/lesley.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+    {
+        name: "Kimmy",
+        image: "../heroes-gallery/data/hero-img/Kimmy.webp",
+        role: "Marksman",
+        counters: [
+            {
+                name: "Saber",
+                image: "https://example.com/saber.jpg"
+            },
+            {
+                name: "Gusion",
+                image: "https://example.com/gusion.jpg"
+            }
+        ]
+    },
+
+    //TANK
     {
         name: "Tigreal",
         image: "../heroes-gallery/data/hero-img/tigreal.webp",
         role: "Tank",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -230,40 +294,9 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Akai",
+        image: "../heroes-gallery/data/hero-img/akai.webp",
         role: "Tank",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -276,40 +309,9 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Franco",
+        image: "../heroes-gallery/data/hero-img/franco.webp",
         role: "Tank",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -322,40 +324,9 @@ const heroesData = [
         ]
     },
     {
-        name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Hylos",
+        image: "../heroes-gallery/data/hero-img/hylos.webp",
         role: "Tank",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -368,86 +339,221 @@ const heroesData = [
         ]
     },
     {
-        name: "Chou",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
-        role: "Fighter",
-        skills: [
-            {
-                name: "Jeet Kune Do",
-                image: "https://example.com/chou-skill1.jpg",
-                description: "Dash and deal damage to enemies"
-            },
-            {
-                name: "Shunpo",
-                image: "https://example.com/chou-skill2.jpg",
-                description: "Immune to crowd control and dash to a target location"
-            },
-            {
-                name: "The Way of Dragon",
-                image: "https://example.com/chou-skill3.jpg",
-                description: "Kick an enemy, dealing damage and stunning them"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Blade of Despair",
-                image: "https://example.com/item7.jpg"
-            },
-            {
-                name: "Endless Battle",
-                image: "https://example.com/item8.jpg"
-            },
-            {
-                name: "Queen's Wings",
-                image: "https://example.com/item9.jpg"
-            }
-        ],
+        name: "Uranus",
+        image: "../heroes-gallery/data/hero-img/uranus.webp",
+        role: "Tank",
         counters: [
             {
-                name: "Kaja",
-                image: "https://example.com/kaja.jpg"
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
             },
             {
-                name: "Khufra",
-                image: "https://example.com/khufra.jpg"
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Belerick",
+        image: "../heroes-gallery/data/hero-img/belerick.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Khufra",
+        image: "../heroes-gallery/data/hero-img/khufra.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Baxia",
+        image: "../heroes-gallery/data/hero-img/baxia.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Atlas",
+        image: "../heroes-gallery/data/hero-img/atlas.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Gloo",
+        image: "../heroes-gallery/data/hero-img/gloo.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Gatotkaca",
+        image: "../heroes-gallery/data/hero-img/gatotkaca.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Grock",
+        image: "../heroes-gallery/data/hero-img/grock.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Barats",
+        image: "../heroes-gallery/data/hero-img/barats.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Esmeralda",
+        image: "../heroes-gallery/data/hero-img/esmeralda.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Edith",
+        image: "../heroes-gallery/data/hero-img/edith.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Minotaur",
+        image: "../heroes-gallery/data/hero-img/minotaur.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Johnson",
+        image: "../heroes-gallery/data/hero-img/johnson.webp",
+        role: "Tank",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+
+    //Fighter    
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Fighter",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
             }
         ]
     },
     {
         name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
         role: "Fighter",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -461,39 +567,8 @@ const heroesData = [
     },
     {
         name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
         role: "Fighter",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -507,39 +582,8 @@ const heroesData = [
     },
     {
         name: "Test",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
         role: "Fighter",
-        skills: [
-            {
-                name: "Attack Wave",
-                image: "https://example.com/tigreal-skill1.jpg",
-                description: "Charges forward, dealing damage and knocking back enemies"
-            },
-            {
-                name: "Sacred Hammer",
-                image: "https://example.com/tigreal-skill2.jpg",
-                description: "Sweeps his hammer, slowing and damaging enemies"
-            },
-            {
-                name: "Implosion",
-                image: "https://example.com/tigreal-skill3.jpg",
-                description: "Creates a vortex that pulls enemies towards him"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Courage Bulwark",
-                image: "https://example.com/item4.jpg"
-            },
-            {
-                name: "Cursed Helmet",
-                image: "https://example.com/item5.jpg"
-            },
-            {
-                name: "Immortality",
-                image: "https://example.com/item6.jpg"
-            }
-        ],
         counters: [
             {
                 name: "Karrie",
@@ -552,51 +596,173 @@ const heroesData = [
         ]
     },
     {
-        name: "Lunox",
-        image: "../heroes-gallery/data/hero-img/tigreal.webp",
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Fighter",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Fighter",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Fighter",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Fighter",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+
+
+    //Mage
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
         role: "Mage",
-        skills: [
-            {
-                name: "Starlight Pulse",
-                image: "https://example.com/lunox-skill1.jpg",
-                description: "Fires orbs of light and darkness"
-            },
-            {
-                name: "Cosmic Fission",
-                image: "https://example.com/lunox-skill2.jpg",
-                description: "Enhances abilities based on chosen aspect"
-            },
-            {
-                name: "Dreamland Twist",
-                image: "https://example.com/lunox-skill3.jpg",
-                description: "Becomes invincible and deals damage"
-            }
-        ],
-        bestItems: [
-            {
-                name: "Clock of Destiny",
-                image: "https://example.com/item10.jpg"
-            },
-            {
-                name: "Lightning Truncheon",
-                image: "https://example.com/item11.jpg"
-            },
-            {
-                name: "Holy Crystal",
-                image: "https://example.com/item12.jpg"
-            }
-        ],
         counters: [
             {
-                name: "Helcurt",
-                image: "https://example.com/helcurt.jpg"
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
             },
             {
-                name: "Harley",
-                image: "https://example.com/harley.jpg"
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
             }
         ]
-    }
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
+    {
+        name: "Test",
+        image: "https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Hero321-portrait.png/revision/latest?cb=20241021141359",
+        role: "Mage",
+        counters: [
+            {
+                name: "Karrie",
+                image: "https://example.com/karrie.jpg"
+            },
+            {
+                name: "Valir",
+                image: "https://example.com/valir.jpg"
+            }
+        ]
+    },
 ];
 
 export default heroesData;
