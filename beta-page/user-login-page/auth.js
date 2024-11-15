@@ -18,13 +18,34 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const analytics = getAnalytics(app);
 
+// Handle username input formatting
+document.getElementById('username').addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // If the input doesn't start with @, add it
+    if (!value.startsWith('@')) {
+        // Remove any existing @ symbols to prevent duplicates
+        value = value.replace(/@/g, '');
+        // Add @ at the beginning
+        value = '@' + value;
+        // Update the input value
+        e.target.value = value;
+    }
+    
+    // Move cursor to the end of input
+    const len = value.length;
+    e.target.setSelectionRange(len, len);
+});
+
 // Check for remembered login
 window.addEventListener('load', () => {
     const rememberedUser = localStorage.getItem('rememberedUser');
     if (rememberedUser) {
         try {
             const userData = JSON.parse(rememberedUser);
-            document.getElementById('username').value = userData.username;
+            const username = userData.username;
+            // Ensure the remembered username has @ prefix
+            document.getElementById('username').value = username.startsWith('@') ? username : '@' + username;
             if (userData.password) {
                 document.getElementById('password').value = userData.password;
             }
@@ -40,9 +61,14 @@ window.addEventListener('load', () => {
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const inputUsername = document.getElementById('username').value;
+    let inputUsername = document.getElementById('username').value;
     const inputPassword = document.getElementById('password').value;
     const rememberMe = document.getElementById('remember').checked;
+    
+    // Ensure username has @ prefix before submission
+    if (!inputUsername.startsWith('@')) {
+        inputUsername = '@' + inputUsername;
+    }
     
     // Show loading indicator
     const loadingSpinner = document.getElementById('loading');

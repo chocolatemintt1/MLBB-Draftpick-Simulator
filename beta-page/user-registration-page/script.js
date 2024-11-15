@@ -4,12 +4,14 @@ import { ref, push, set, get, child } from "https://www.gstatic.com/firebasejs/1
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('signupForm');
     const alias = document.getElementById('alias');
+    const email = document.getElementById('email');
     const username = document.getElementById('username');
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirmPassword');
 
     // Error message elements
     const aliasError = document.getElementById('aliasError');
+    const emailError = document.getElementById('emailError');
     const usernameError = document.getElementById('usernameError');
     const passwordError = document.getElementById('passwordError');
     const confirmPasswordError = document.getElementById('confirmPasswordError');
@@ -22,6 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (/[\[\]<>()]/g.test(value)) {
             return 'Alias must not contain [ ] < > ( )';
+        }
+        return '';
+    };
+
+    const validateEmail = (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value) {
+            return 'Email is required';
+        }
+        if (!emailRegex.test(value)) {
+            return 'Please enter a valid email address';
         }
         return '';
     };
@@ -43,21 +56,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return '';
     };
 
-    // Check if username already exists
-    const checkUsernameExists = async (username) => {
+    // Check if username or email already exists
+    const checkExistingCredentials = async (username, email) => {
         const usersRef = ref(database, 'users');
         const snapshot = await get(usersRef);
         
         if (snapshot.exists()) {
             const users = snapshot.val();
-            return Object.values(users).some(user => user.username === username);
+            const existingUsername = Object.values(users).some(user => user.username === username);
+            const existingEmail = Object.values(users).some(user => user.email === email);
+            
+            return {
+                usernameExists: existingUsername,
+                emailExists: existingEmail
+            };
         }
-        return false;
+        return {
+            usernameExists: false,
+            emailExists: false
+        };
     };
 
     // Real-time validation
     alias.addEventListener('input', (e) => {
         aliasError.textContent = validateAlias(e.target.value);
+    });
+
+    email.addEventListener('input', (e) => {
+        emailError.textContent = validateEmail(e.target.value);
     });
 
     username.addEventListener('input', (e) => {
@@ -88,23 +114,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validate all fields
         const aliasValidation = validateAlias(alias.value);
+        const emailValidation = validateEmail(email.value);
         const usernameValidation = validateUsername(username.value.slice(1));
         const passwordValidation = validatePassword(password.value);
         const confirmValidation = password.value !== confirmPassword.value ? 'Passwords do not match' : '';
 
         // Update error messages
         aliasError.textContent = aliasValidation;
+        emailError.textContent = emailValidation;
         usernameError.textContent = usernameValidation;
         passwordError.textContent = passwordValidation;
         confirmPasswordError.textContent = confirmValidation;
 
         // Check if there are any validation errors
-        if (!aliasValidation && !usernameValidation && !passwordValidation && !confirmValidation) {
+        if (!aliasValidation && !emailValidation && !usernameValidation && !passwordValidation && !confirmValidation) {
             try {
-                // Check if username already exists
-                const usernameExists = await checkUsernameExists(username.value);
+                // Check if username or email already exists
+                const { usernameExists, emailExists } = await checkExistingCredentials(username.value, email.value);
+                
                 if (usernameExists) {
                     usernameError.textContent = 'Username already exists';
+                    return;
+                }
+                
+                if (emailExists) {
+                    emailError.textContent = 'Email already registered';
                     return;
                 }
 
@@ -114,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Create a new user object
                 const userData = {
                     alias: alias.value,
+                    email: email.value,
                     username: username.value,
                     password: password.value, // In a real app, this should be hashed
                     createdAt: new Date().toISOString()
