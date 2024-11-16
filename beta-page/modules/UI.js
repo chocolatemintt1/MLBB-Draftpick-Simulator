@@ -12,6 +12,9 @@ export class UI {
         this.aiThinkingTime = { min: 3000, max: 8000 };
         this.maxBansPerTeam = 5;
         this.notificationTimeout = null;
+        this.floatingTimer = null;
+        this.lastScrollY = 0;
+        this.draftAreaObserver = null;
 
         // Define static properties
         this.roleColors = {
@@ -200,8 +203,45 @@ export class UI {
         this.roleFilters.style.display = 'flex';
     }
 
+    createFloatingTimer() {
+        // Create floating timer element if it doesn't exist
+        if (!this.floatingTimer) {
+            this.floatingTimer = document.createElement('div');
+            this.floatingTimer.id = 'floatingTimer';
+            this.floatingTimer.className = 'floating-timer hidden';
+            document.body.appendChild(this.floatingTimer);
+        }
+    }
+
+    setupScrollHandler() {
+        // Create an Intersection Observer to watch the draft area
+        const draftArea = document.querySelector('.phase-indicator').parentElement;
+        
+        this.draftAreaObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    // Only show timer when draft area is not visible
+                    if (!entry.isIntersecting && this.timeLeft > 0) {
+                        this.floatingTimer?.classList.add('visible');
+                    } else {
+                        this.floatingTimer?.classList.remove('visible');
+                    }
+                });
+            },
+            {
+                threshold: 0,
+                rootMargin: '-100px 0px' // Adds a small buffer zone
+            }
+        );
+
+        // Start observing the draft area
+        this.draftAreaObserver.observe(draftArea);
+    }
+
     initializeElements() {
         this.createSideSelection();
+        this.createFloatingTimer();
+        this.setupScrollHandler();
     }
 
     createSideSelection() {
@@ -319,6 +359,7 @@ export class UI {
     }
 
     async startDraft() {
+        this.setupScrollHandler();
         this.gameState.selectedEnemy = this.teamSelect.value;
         if (this.gameState.selectedEnemy === 'player') {
             alert('Please select an enemy team!');
@@ -361,6 +402,16 @@ export class UI {
         if (this.countdownTimer) {
             clearInterval(this.countdownTimer);
             this.countdownTimer = null;
+        }
+        
+        // Hide floating timer when countdown is cleared
+        if (this.floatingTimer) {
+            this.floatingTimer.classList.remove('visible');
+        }
+
+        // Disconnect the observer when the draft ends
+        if (this.draftAreaObserver) {
+            this.draftAreaObserver.disconnect();
         }
     }
 
@@ -415,10 +466,30 @@ export class UI {
     }
 
     updateCountdownDisplay() {
+        // Update both the regular countdown and floating timer
         const countdownElement = document.getElementById('countdown');
         const turnText = this.gameState.currentTurn === 'player' ? 'Your' : 'Enemy';
-        countdownElement.textContent = `${turnText} turn: ${this.timeLeft}s`;
+        const timerText = `${turnText} turn: ${this.timeLeft}s`;
+        
+        // Update regular countdown
+        countdownElement.textContent = timerText;
         countdownElement.className = `${this.gameState.currentTurn}-turn`;
+
+        // Update floating timer
+        if (this.floatingTimer) {
+            this.floatingTimer.textContent = timerText;
+            this.floatingTimer.className = `floating-timer ${this.gameState.currentTurn}-turn`;
+            
+            // Let the Intersection Observer handle visibility
+            const draftArea = document.querySelector('.phase-indicator').parentElement;
+            const draftAreaRect = draftArea.getBoundingClientRect();
+            
+            if (this.timeLeft > 0 && draftAreaRect.top < 0) {
+                this.floatingTimer.classList.add('visible');
+            } else {
+                this.floatingTimer.classList.remove('visible');
+            }
+        }
     }
 
     shouldTransitionToPick() {
